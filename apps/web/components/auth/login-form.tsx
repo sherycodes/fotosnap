@@ -2,26 +2,29 @@
 
 import { Button } from '@/components/ui/button';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card';
 import {
-    Field,
-    FieldError,
-    FieldGroup,
-    FieldLabel,
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { LoginFormData, loginSchema } from '@/lib/auth/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, UseFormSetError } from 'react-hook-form';
 
 interface LoginFormsProps {
-  onSubmit: (data: LoginFormData) => Promise<void>;
+  onSubmit: (
+    data: LoginFormData,
+    setError: UseFormSetError<LoginFormData>
+  ) => Promise<void>;
 }
 
 export default function LoginForm({ onSubmit }: LoginFormsProps) {
@@ -39,7 +42,7 @@ export default function LoginForm({ onSubmit }: LoginFormsProps) {
     setIsSubmitting(true);
 
     try {
-      await onSubmit(data);
+      await onSubmit(data, form.setError);
     } catch (error) {
       console.error('Login error:', error);
     } finally {
@@ -48,7 +51,7 @@ export default function LoginForm({ onSubmit }: LoginFormsProps) {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className='w-full max-w-md mx-auto'>
       <CardHeader>
         <CardTitle>Sign In</CardTitle>
         <CardDescription>
@@ -58,22 +61,25 @@ export default function LoginForm({ onSubmit }: LoginFormsProps) {
       <CardContent>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="space-y-4"
-          id="form-rhf-login"
+          className='space-y-4'
+          id='form-rhf-login'
         >
+          {form.getErrors().root && (
+            <FieldError errors={[form.getErrors().root]} />
+          )}
           <FieldGroup>
             <Controller
               control={form.control}
-              name="email"
+              name='email'
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-login-email">Email</FieldLabel>
+                  <FieldLabel htmlFor='form-rhf-login-email'>Email</FieldLabel>
                   <Input
-                    type="email"
-                    placeholder="Enter your email"
+                    type='email'
+                    placeholder='Enter your email'
                     disabled={isSubmitting}
                     aria-invalid={fieldState.invalid}
-                    aria-label="form-rhf-login-email"
+                    aria-label='form-rhf-login-email'
                     {...field}
                   />
                   {fieldState.invalid && (
@@ -84,18 +90,18 @@ export default function LoginForm({ onSubmit }: LoginFormsProps) {
             />
             <Controller
               control={form.control}
-              name="password"
+              name='password'
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-login-password">
+                  <FieldLabel htmlFor='form-rhf-login-password'>
                     Password
                   </FieldLabel>
                   <Input
-                    type="password"
-                    placeholder="Create a password"
+                    type='password'
+                    placeholder='Create a password'
                     disabled={isSubmitting}
                     aria-invalid={fieldState.invalid}
-                    aria-label="form-rhf-login-password"
+                    aria-label='form-rhf-login-password'
                     {...field}
                   />
                   {fieldState.invalid && (
@@ -105,7 +111,7 @@ export default function LoginForm({ onSubmit }: LoginFormsProps) {
               )}
             />
           </FieldGroup>
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type='submit' className='w-full' disabled={isSubmitting}>
             {isSubmitting ? 'Signing in...' : 'Sign in'}
           </Button>
         </form>

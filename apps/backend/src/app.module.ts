@@ -1,9 +1,11 @@
 import { drizzleAdapter } from '@better-auth/drizzle-adapter';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthModule } from '@thallesp/nestjs-better-auth';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard, AuthModule } from '@thallesp/nestjs-better-auth';
 import { betterAuth } from 'better-auth';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { AppController } from './app.controller.js';
 import { DATABASE_CONNECTION } from './database/database-connection.js';
 import { DatabaseModule } from './database/database.module.js';
 
@@ -22,10 +24,15 @@ import { DatabaseModule } from './database/database.module.js';
             : undefined,
         }),
       }),
-      inject: [DATABASE_CONNECTION, ConfigModule],
+      inject: [DATABASE_CONNECTION, ConfigService],
     }),
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AppController],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}

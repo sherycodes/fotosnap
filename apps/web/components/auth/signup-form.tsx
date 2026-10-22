@@ -2,26 +2,29 @@
 
 import { Button } from '@/components/ui/button';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card';
 import {
-    Field,
-    FieldError,
-    FieldGroup,
-    FieldLabel
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { SignupFormData, signupSchema } from '@/lib/auth/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, UseFormSetError } from 'react-hook-form';
 
 interface SignupFormProps {
-  onSubmit: (data: SignupFormData) => Promise<void>;
+  onSubmit: (
+    data: SignupFormData,
+    setError: UseFormSetError<SignupFormData>
+  ) => Promise<void>;
 }
 
 export default function SignupForm({ onSubmit }: SignupFormProps) {
@@ -41,7 +44,7 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
     setIsSubmitting(true);
 
     try {
-      await onSubmit(data);
+      await onSubmit(data, form.setError);
     } catch (error) {
       console.error('Signup error:', error);
     } finally {
@@ -50,7 +53,7 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className='w-full max-w-md mx-auto'>
       <CardHeader>
         <CardTitle>Create Account</CardTitle>
         <CardDescription>
@@ -59,22 +62,25 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
       </CardHeader>
       <CardContent>
         <form
-          id="form-rhf-signup"
+          id='form-rhf-signup'
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="space-y-4"
+          className='space-y-4'
         >
+          {form.getErrors().root && (
+            <FieldError errors={[form.getErrors().root]} />
+          )}
           <FieldGroup>
             <Controller
               control={form.control}
-              name="name"
+              name='name'
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-signup-name">Name</FieldLabel>
+                  <FieldLabel htmlFor='form-rhf-signup-name'>Name</FieldLabel>
                   <Input
-                    type="name"
-                    placeholder="Enter your full name"
+                    type='name'
+                    placeholder='Enter your full name'
                     disabled={isSubmitting}
-                    id="form-rhf-signup-name"
+                    id='form-rhf-signup-name'
                     aria-invalid={fieldState.invalid}
                     {...field}
                   />
@@ -86,15 +92,15 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
             />
             <Controller
               control={form.control}
-              name="email"
+              name='email'
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-signup-email">Name</FieldLabel>
+                  <FieldLabel htmlFor='form-rhf-signup-email'>Email</FieldLabel>
                   <Input
-                    type="email"
-                    placeholder="Enter your email"
+                    type='email'
+                    placeholder='Enter your email'
                     disabled={isSubmitting}
-                    id="form-rhf-signup-email"
+                    id='form-rhf-signup-email'
                     aria-invalid={fieldState.invalid}
                     {...field}
                   />
@@ -106,17 +112,17 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
             />
             <Controller
               control={form.control}
-              name="password"
+              name='password'
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-signup-password">
+                  <FieldLabel htmlFor='form-rhf-signup-password'>
                     Password
                   </FieldLabel>
                   <Input
-                    type="password"
-                    placeholder="Create a password"
+                    type='password'
+                    placeholder='Create a password'
                     disabled={isSubmitting}
-                    id="form-rhf-signup-password"
+                    id='form-rhf-signup-password'
                     aria-invalid={fieldState.invalid}
                     {...field}
                   />
@@ -128,16 +134,16 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
             />
             <Controller
               control={form.control}
-              name="confirmPassword"
+              name='confirmPassword'
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-signup-confirm-password">
+                  <FieldLabel htmlFor='form-rhf-signup-confirm-password'>
                     Confirm Password
                   </FieldLabel>
                   <Input
-                    type="password"
-                    placeholder="Confirm your password"
-                    id="form-rhf-signup-confirm-password"
+                    type='password'
+                    placeholder='Confirm your password'
+                    id='form-rhf-signup-confirm-password'
                     aria-invalid={fieldState.invalid}
                     disabled={isSubmitting}
                     {...field}
@@ -149,7 +155,7 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
               )}
             />
           </FieldGroup>
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type='submit' className='w-full' disabled={isSubmitting}>
             {isSubmitting ? 'Creating account...' : 'Create Account'}
           </Button>
         </form>
