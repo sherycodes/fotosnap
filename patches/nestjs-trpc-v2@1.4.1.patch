@@ -1,0 +1,17 @@
+diff --git a/dist/scanners/file.scanner.js b/dist/scanners/file.scanner.js
+index 23b29c24d205528e7847e400cb424c755b198aad..25a766342c8020b19a90ac7e0f0c277c559a2f7a 100644
+--- a/dist/scanners/file.scanner.js
++++ b/dist/scanners/file.scanner.js	
+@@ -55,7 +55,11 @@ let FileScanner = class FileScanner {
+         const stack = error.stack;
+         Error.prepareStackTrace = originalPrepareStackTrace;
+         const caller = stack[skip];
+-        const jsFilePath = caller?.getFileName();
++        let jsFilePath = caller?.getFileName();
++        // ESM stack frames report file:// URLs (with %-encoded chars); convert to a plain path.
++        if (jsFilePath?.startsWith('file://')) {
++            jsFilePath = require('node:url').fileURLToPath(jsFilePath);
++        }
+         if (jsFilePath == null) {
+             throw new Error(`Could not find caller file: ${caller}`);
+         }
