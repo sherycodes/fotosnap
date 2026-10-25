@@ -29,8 +29,10 @@ export default function Feed() {
           <Card key={id} className='overflow-hidden'>
             <div className='flex items-center justify-between p-4'>
               <div className='flex items-center space-x-3'>
-                <UserAvatar avatar={avatar || null} username={username} />
-
+                <UserAvatar
+                  avatar={avatar ? getImageUrl(avatar) : null}
+                  username={username}
+                />
                 <span className='font-semibold text-sm'>{username}</span>
               </div>
             </div>

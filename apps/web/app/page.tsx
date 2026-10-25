@@ -1,4 +1,5 @@
 import Feed from '@/components/home/feed';
+import Sidebar from '@/components/home/sidebar';
 import Stories from '@/components/home/stories';
 import PhotoUpload from '@/components/models/photo-upload';
 import { HydrateClient, prefetch, trpc } from '@/lib/trpc/server';
@@ -16,6 +17,9 @@ export default async function Home() {
               <Suspense fallback={<div>Loading...</div>}>
                 <Feed />
               </Suspense>
+            </div>
+            <div className='lg:sticky lg:top-8 lg:h-fit'>
+              <Sidebar />
             </div>
           </div>
         </div>

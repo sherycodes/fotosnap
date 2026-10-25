@@ -10,3 +10,17 @@ export interface UserAvatarProps {
   className?: string;
   iconClassName?: string;
 }
+
+export interface AvatarUploadProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (file: File) => Promise<void>;
+  currentAvatar?: string | null;
+}
+
+export interface SuggestedUser {
+  id: string;
+  username: string;
+  avatar: string;
+  followedBy: string;
+}
