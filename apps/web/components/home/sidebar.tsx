@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import AvatarUpload from '../models/avatar-upload';
 import UserAvatar from '../shared/user-avatar';
+import { ThemeToggle } from '../theme/theme-toggle';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 
@@ -61,11 +62,10 @@ export default function Sidebar() {
             />
 
             <Button
-              variant='ghost'
               size='icon'
               onClick={() => setShowAvatarModal(true)}
               title='Change avatar'
-              className='absolute -bottom-1 -right-1 size-6 bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90 hover:text-primary-foreground'
+              className='absolute -bottom-1 -right-1 size-6 rounded-full p-1'
             >
               <Camera className='size-3' />
             </Button>
@@ -78,7 +78,7 @@ export default function Sidebar() {
             </div>
           </div>
           <div className='flex items-center gap-1 sm:gap-2 shrink-0'>
-            {/* <ThemeToggle /> */}
+            <ThemeToggle />
             <Button
               variant='ghost'
               size='icon'

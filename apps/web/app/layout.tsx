@@ -1,9 +1,10 @@
+import { ThemeProvider } from '@/components/theme/theme-provider';
+import { Toaster } from '@/components/ui/sonner';
 import { TRPCReactProvider } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 import { Geist } from 'next/font/google';
 import localFont from 'next/font/local';
-import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
@@ -34,10 +35,17 @@ export default function RootLayout({
       className={cn('font-sans', geist.variable)}
     >
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <TRPCReactProvider>
-          {children}
-          <Toaster />
-        </TRPCReactProvider>
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='system'
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TRPCReactProvider>
+            {children}
+            <Toaster />
+          </TRPCReactProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
