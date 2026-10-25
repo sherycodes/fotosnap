@@ -1,5 +1,6 @@
 import Feed from '@/components/home/feed';
 import Stories from '@/components/home/stories';
+import PhotoUpload from '@/components/models/photo-upload';
 import { HydrateClient, prefetch, trpc } from '@/lib/trpc/server';
 import { Suspense } from 'react';
 
@@ -18,6 +19,7 @@ export default async function Home() {
             </div>
           </div>
         </div>
+        <PhotoUpload />
       </div>
     </HydrateClient>
   );

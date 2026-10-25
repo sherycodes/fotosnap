@@ -23,7 +23,7 @@ export class PostsService {
         caption: createPostInput.caption,
         likes: 0,
         comments: 0,
-        image: '',
+        image: createPostInput.image,
       })
       .returning();
 
@@ -53,7 +53,7 @@ export class PostsService {
       id: savedPost.id!,
       user: {
         username: userInfo.name,
-        avatar: '',
+        avatar: userInfo.image || '',
       },
       image: savedPost.image,
       caption: savedPost.caption,

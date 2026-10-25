@@ -11,6 +11,7 @@ import { UsersModule } from './auth/users/users.module.js';
 import { DATABASE_CONNECTION } from './database/database-connection.js';
 import { DatabaseModule } from './database/database.module.js';
 import { PostsModule } from './posts/posts.module.js';
+import { UploadModule } from './upload/upload.module.js';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { PostsModule } from './posts/posts.module.js';
     }),
     PostsModule,
     UsersModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [

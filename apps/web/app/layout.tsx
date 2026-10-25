@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 import { Geist } from 'next/font/google';
 import localFont from 'next/font/local';
+import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
@@ -29,7 +30,10 @@ export default function RootLayout({
   return (
     <html lang='en' className={cn('font-sans', geist.variable)}>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          {children}
+          <Toaster />
+        </TRPCReactProvider>
       </body>
     </html>
   );
