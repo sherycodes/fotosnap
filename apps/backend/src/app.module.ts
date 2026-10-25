@@ -6,7 +6,9 @@ import { AuthGuard, AuthModule } from '@thallesp/nestjs-better-auth';
 import { betterAuth } from 'better-auth';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { TRPCModule } from 'nestjs-trpc-v2';
+import { AppContext } from './app.context.js';
 import { AppController } from './app.controller.js';
+import { AuthMiddleware } from './auth/auth-trpc.middleware.js';
 import { UsersModule } from './auth/users/users.module.js';
 import { DATABASE_CONNECTION } from './database/database-connection.js';
 import { DatabaseModule } from './database/database.module.js';
@@ -20,6 +22,7 @@ import { UploadModule } from './upload/upload.module.js';
     TRPCModule.forRoot({
       autoSchemaFile: '../../packages/trpc/src/server',
       basePath: '/api/trpc',
+      context: AppContext,
     }),
     AuthModule.forRootAsync({
       imports: [DatabaseModule, ConfigModule],
@@ -40,6 +43,8 @@ import { UploadModule } from './upload/upload.module.js';
   ],
   controllers: [AppController],
   providers: [
+    AuthMiddleware,
+    AppContext,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
