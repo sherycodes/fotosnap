@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bodyParser: false,
   });
-
+  app.setGlobalPrefix('api');
   const uploadsPath = join(process.cwd(), 'uploads', 'images');
   app.useStaticAssets(uploadsPath, { prefix: '/uploads/' });
   await app.listen(process.env.PORT ?? 3001);

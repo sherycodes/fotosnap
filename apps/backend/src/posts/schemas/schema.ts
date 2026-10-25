@@ -8,7 +8,9 @@ export const post = pgTable('posts', {
   caption: text().notNull(),
   likes: integer().notNull().default(0),
   comments: integer().notNull().default(0),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
   userId: text('user_id')
     .notNull()
     .references(() => user.id),

@@ -37,7 +37,6 @@ const PhotoUpload = () => {
         setIsOpen(false);
         clearSelection();
       },
-      onError: (err) => toast.error(err.message),
     }),
   );
 
@@ -86,10 +85,8 @@ const PhotoUpload = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger>
-        <Fab>
-          <Plus className='size-6' />
-        </Fab>
+      <DialogTrigger render={<Fab />}>
+        <Plus className='size-6' />
       </DialogTrigger>
       <DialogContent className='max-w-md'>
         <DialogHeader>

@@ -7,11 +7,12 @@ import Image from 'next/image';
 import UserAvatar from '../shared/user-avatar';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
+import { formatRelativeTime, getImageUrl } from '@/lib/utils';
 
 export default function Feed() {
   const trpc = useTRPC();
   const { data: posts } = useSuspenseQuery(
-    trpc.postsRouter.findAll.queryOptions()
+    trpc.postsRouter.findAll.queryOptions(),
   );
   return (
     <div className='space-y-6'>
@@ -35,7 +36,12 @@ export default function Feed() {
             </div>
 
             <div className='aspect-square relative'>
-              <Image src={image} alt='Post' className='object-cover' fill />
+              <Image
+                src={getImageUrl(image)}
+                alt='Post'
+                className='object-cover'
+                fill
+              />
             </div>
 
             <div className='p-4 space-y-3'>
@@ -73,12 +79,17 @@ export default function Feed() {
                 </div>
               )}
 
-              <div className='text-xs text-muted-foreground uppercase'>
-                {createdAt}
-              </div>
+              <time
+                dateTime={createdAt}
+                title={new Date(createdAt).toLocaleString('en')}
+                className='block text-xs text-muted-foreground uppercase'
+                suppressHydrationWarning
+              >
+                {formatRelativeTime(createdAt)}
+              </time>
             </div>
           </Card>
-        )
+        ),
       )}
     </div>
   );
