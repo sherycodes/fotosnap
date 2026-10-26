@@ -6,16 +6,16 @@ import { AuthGuard, AuthModule } from '@thallesp/nestjs-better-auth';
 import { betterAuth } from 'better-auth';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { TRPCModule } from 'nestjs-trpc-v2';
-import { AppContext } from './app.context.js';
-import { AppController } from './app.controller.js';
-import { AuthMiddleware } from './auth/auth-trpc.middleware.js';
-import { UsersModule } from './auth/users/users.module.js';
-import { DATABASE_CONNECTION } from './database/database-connection.js';
-import { DatabaseModule } from './database/database.module.js';
-import { PostsModule } from './posts/posts.module.js';
-import { UploadModule } from './upload/upload.module.js';
-import { CommentsModule } from './comments/comments.module.js';
-import { StoriesModule } from './stories/stories.module.js';
+import { AppContext } from './app.context.ts';
+import { AppController } from './app.controller.ts';
+import { AuthMiddleware } from './auth/auth-trpc.middleware.ts';
+import { UsersModule } from './auth/users/users.module.ts';
+import { DATABASE_CONNECTION } from './database/database-connection.ts';
+import { DatabaseModule } from './database/database.module.ts';
+import { PostsModule } from './posts/posts.module.ts';
+import { UploadModule } from './upload/upload.module.ts';
+import { CommentsModule } from './comments/comments.module.ts';
+import { StoriesModule } from './stories/stories.module.ts';
 
 @Module({
   imports: [

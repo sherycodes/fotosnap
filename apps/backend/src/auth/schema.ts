@@ -7,7 +7,7 @@ import {
   text,
   timestamp,
 } from 'drizzle-orm/pg-core';
-import { like, post } from '../posts/schemas/schema.js';
+import { like, post } from '../posts/schemas/schema.ts';
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),

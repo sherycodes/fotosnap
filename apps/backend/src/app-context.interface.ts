@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { session, user } from './auth/schema.js';
+import { session, user } from './auth/schema.ts';
 
 export interface IAppContext {
   req: Request;

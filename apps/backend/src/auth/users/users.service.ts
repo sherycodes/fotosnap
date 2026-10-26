@@ -2,10 +2,10 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import type { UpdateProfileInput } from '@repo/trpc/schemas';
 import { and, eq, ne, notInArray, sql } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { DATABASE_CONNECTION } from '../../database/database-connection.js';
-import { schema } from '../../database/database.module.js';
+import { DATABASE_CONNECTION } from '../../database/database-connection.ts';
+import { schema } from '../../database/database.module.ts';
 import { post } from '../../posts/schemas/schema.ts';
-import { follow, user } from '../schema.js';
+import { follow, user } from '../schema.ts';
 import { TRPCError } from '@trpc/server';
 
 @Injectable()

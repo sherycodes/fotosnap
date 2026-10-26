@@ -1,6 +1,6 @@
 import { relations } from 'drizzle-orm';
 import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
-import { user } from '../../auth/schema.js';
+import { user } from '../../auth/schema.ts';
 
 export const story = pgTable('stories', {
   id: serial().primaryKey(),

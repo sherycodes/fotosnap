@@ -14,9 +14,9 @@ import {
   UseMiddlewares,
 } from 'nestjs-trpc-v2';
 import z from 'zod';
-import type { IAppContext } from '../app-context.interface.js';
-import { AuthMiddleware } from '../auth/auth-trpc.middleware.js';
-import { PostsService } from './posts.service.js';
+import type { IAppContext } from '../app-context.interface.ts';
+import { AuthMiddleware } from '../auth/auth-trpc.middleware.ts';
+import { PostsService } from './posts.service.ts';
 
 @Router()
 @UseMiddlewares(AuthMiddleware)
