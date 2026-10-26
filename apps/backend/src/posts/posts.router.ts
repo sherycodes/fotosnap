@@ -1,4 +1,11 @@
 import {
+  createPostSchema,
+  likePostSchema,
+  postSchema,
+  type CreatePost,
+  type LikePost,
+} from '@repo/trpc/schemas';
+import {
   Ctx,
   Input,
   Mutation,
@@ -10,13 +17,6 @@ import z from 'zod';
 import type { IAppContext } from '../app-context.interface.js';
 import { AuthMiddleware } from '../auth/auth-trpc.middleware.js';
 import { PostsService } from './posts.service.js';
-import {
-  createPostSchema,
-  likePostSchema,
-  postSchema,
-  type CreatePost,
-  type LikePost,
-} from './schemas/trpc.schema.js';
 
 @Router()
 @UseMiddlewares(AuthMiddleware)

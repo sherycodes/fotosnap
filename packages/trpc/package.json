@@ -2,8 +2,10 @@
   "name": "@repo/trpc",
   "private": "true",
   "version": "1.0.0",
+  "type": "module",
   "exports": {
-    "./router": "./src/server/server.ts"
+    "./router": "./src/server/server.ts",
+    "./schemas": "./src/schemas/post.schema.ts"
   },
   "peerDependencies": {
     "zod": "4.6.7",
