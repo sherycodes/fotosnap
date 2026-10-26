@@ -15,6 +15,7 @@ import { DatabaseModule } from './database/database.module.js';
 import { PostsModule } from './posts/posts.module.js';
 import { UploadModule } from './upload/upload.module.js';
 import { CommentsModule } from './comments/comments.module.js';
+import { StoriesModule } from './stories/stories.module.js';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { CommentsModule } from './comments/comments.module.js';
     UsersModule,
     UploadModule,
     CommentsModule,
+    StoriesModule,
   ],
   controllers: [AppController],
   providers: [

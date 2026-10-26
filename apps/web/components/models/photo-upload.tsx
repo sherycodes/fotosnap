@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useTRPC } from '@/lib/trpc/client';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, X } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -17,7 +18,6 @@ import { Button } from '../ui/button';
 import { Fab } from '../ui/fab';
 import FileUploadArea from '../ui/file-upload-area';
 import { Label } from '../ui/label';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const PhotoUpload = () => {
   const [preview, setPreview] = useState<string | null>(null);
@@ -69,8 +69,7 @@ const PhotoUpload = () => {
       });
 
       if (!res.ok) {
-        toast.error('Failed to upload image');
-        return;
+        throw new Error('Failed to upload image');
       }
 
       const { filename } = await res.json();

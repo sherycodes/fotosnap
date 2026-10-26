@@ -1,4 +1,4 @@
-import { Comment } from '@repo/trpc/schemas';
+import { StoryGroup } from '@repo/trpc/schemas';
 
 export interface Story {
   id: string;
@@ -31,4 +31,17 @@ export interface CommentsProps {
   postId: number;
   onAddComment: (text: string) => void;
   onDeleteComment: (commentId: number) => void;
+}
+
+export interface StoryUploadProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (file: File) => Promise<void>;
+}
+
+export interface StoryViewerProps {
+  storyGroups: StoryGroup[];
+  open: boolean;
+  initialGroupIndex: number;
+  onOpenChange: (open: boolean) => void;
 }
