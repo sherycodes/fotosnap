@@ -43,6 +43,13 @@
       "when": 1793015818245,
       "tag": "0005_violet_firebird",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793047083425,
+      "tag": "0006_thankful_bloodscream",
+      "breakpoints": true
     }
   ]
 }
