@@ -1,19 +1,58 @@
 'use client';
 
 import { useTRPC } from '@/lib/trpc/client';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { formatRelativeTime, getImageUrl } from '@/lib/utils';
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 import { Heart, MessageCircle } from 'lucide-react';
 import Image from 'next/image';
+import { toast } from 'sonner';
 import UserAvatar from '../shared/user-avatar';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { formatRelativeTime, getImageUrl } from '@/lib/utils';
 
 export default function Feed() {
   const trpc = useTRPC();
   const { data: posts } = useSuspenseQuery(
     trpc.postsRouter.findAll.queryOptions(),
   );
+
+  const queryClient = useQueryClient();
+  const postsKey = trpc.postsRouter.findAll.queryKey();
+  const toggleLike = useMutation(
+    trpc.postsRouter.likePost.mutationOptions({
+      onMutate: async ({ postId }) => {
+        await queryClient.cancelQueries({ queryKey: postsKey });
+        const previousPosts = queryClient.getQueryData(postsKey);
+        queryClient.setQueryData(postsKey, (old) =>
+          old?.map((post) =>
+            post.id === postId
+              ? {
+                  ...post,
+                  isLiked: !post.isLiked,
+                  likes: post.likes + (post.isLiked ? -1 : 1),
+                }
+              : post,
+          ),
+        );
+
+        return { previousPosts };
+      },
+      onError: (_err, _vars, context) => {
+        if (context?.previousPosts) {
+          queryClient.setQueryData(postsKey, context.previousPosts);
+        }
+        toast.error('Could not update like');
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: postsKey });
+      },
+    }),
+  );
+
   return (
     <div className='space-y-6'>
       {posts.map(
@@ -24,6 +63,7 @@ export default function Feed() {
           comments,
           caption,
           createdAt,
+          isLiked,
           user: { avatar, username },
         }) => (
           <Card key={id} className='overflow-hidden'>
@@ -52,10 +92,12 @@ export default function Feed() {
                   <Button
                     variant='ghost'
                     size='sm'
-                    onClick={() => {}}
+                    onClick={() => toggleLike.mutate({ postId: id })}
                     className='p-0 h-auto'
                   >
-                    <Heart className='size-6 text-foreground' />
+                    <Heart
+                      className={`size-6 ${isLiked ? 'fill-red-500 text-red-500' : 'text-foreground'}`}
+                    />
                   </Button>
                   <Button
                     variant='ghost'

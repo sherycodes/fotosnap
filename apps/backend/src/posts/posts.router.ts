@@ -1,14 +1,25 @@
-import { Ctx, Input, Mutation, Query, Router } from 'nestjs-trpc-v2';
+import {
+  Ctx,
+  Input,
+  Mutation,
+  Query,
+  Router,
+  UseMiddlewares,
+} from 'nestjs-trpc-v2';
 import z from 'zod';
 import type { IAppContext } from '../app-context.interface.js';
+import { AuthMiddleware } from '../auth/auth-trpc.middleware.js';
 import { PostsService } from './posts.service.js';
 import {
   createPostSchema,
+  likePostSchema,
   postSchema,
   type CreatePost,
+  type LikePost,
 } from './schemas/trpc.schema.js';
 
 @Router()
+@UseMiddlewares(AuthMiddleware)
 export class PostsRouter {
   constructor(private readonly postsService: PostsService) {}
 
@@ -21,7 +32,15 @@ export class PostsRouter {
   }
 
   @Query({ output: z.array(postSchema) })
-  async findAll() {
-    return this.postsService.findAll();
+  async findAll(@Ctx() context: IAppContext) {
+    return this.postsService.findAll(context.user.id);
+  }
+
+  @Mutation({ input: likePostSchema })
+  async likePost(
+    @Input() likePostInput: LikePost,
+    @Ctx() context: IAppContext,
+  ) {
+    return this.postsService.likePost(likePostInput.postId, context.user.id);
   }
 }

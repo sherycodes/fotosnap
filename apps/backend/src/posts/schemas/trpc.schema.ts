@@ -5,6 +5,10 @@ export const createPostSchema = z.object({
   caption: z.string().min(1, 'Caption is required'),
 });
 
+export const likePostSchema = z.object({
+  postId: z.number(),
+});
+
 export const postSchema = z.object({
   id: z.number(),
   user: z.object({
@@ -16,7 +20,9 @@ export const postSchema = z.object({
   likes: z.number(),
   comments: z.number(),
   createdAt: z.string(),
+  isLiked: z.boolean().optional(),
 });
 
 export type Post = z.infer<typeof postSchema>;
 export type CreatePost = z.infer<typeof createPostSchema>;
+export type LikePost = z.infer<typeof likePostSchema>;
