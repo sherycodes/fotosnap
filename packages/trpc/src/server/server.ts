@@ -9,18 +9,6 @@ const appRouter = t.router({
     create: publicProcedure.input(z.object({
       image: z.string().min(1, 'Image is required'),
       caption: z.string().min(1, 'Caption is required'),
-    })).output(z.object({
-      id: z.number(),
-      user: z.object({
-        username: z.string(),
-        avatar: z.string(),
-      }),
-      image: z.string(),
-      caption: z.string(),
-      likes: z.number(),
-      comments: z.number(),
-      createdAt: z.string(),
-      isLiked: z.boolean().optional(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     findAll: publicProcedure.output(z.array(z.object({
       id: z.number(),
@@ -38,6 +26,27 @@ const appRouter = t.router({
     likePost: publicProcedure.input(z.object({
       postId: z.number(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
+  }),
+  commentsRouter: t.router({
+    create: publicProcedure.input(z.object({
+      postId: z.number(),
+      text: z.string().min(1, "Comment can't be empty"),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    delete: publicProcedure.input(z.object({
+      commentId: z.number(),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    findByPostId: publicProcedure.input(z.object({
+      postId: z.number(),
+    })).output(z.array(z.object({
+      id: z.number(),
+      text: z.string(),
+      user: z.object({
+        id: z.string(),
+        username: z.string(),
+        avatar: z.string(),
+      }),
+      createdAt: z.string(),
+    }))).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
   })
 });
 export type AppRouter = typeof appRouter;

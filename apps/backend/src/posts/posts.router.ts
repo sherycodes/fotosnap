@@ -23,7 +23,7 @@ import { PostsService } from './posts.service.js';
 export class PostsRouter {
   constructor(private readonly postsService: PostsService) {}
 
-  @Mutation({ input: createPostSchema, output: postSchema })
+  @Mutation({ input: createPostSchema })
   async create(
     @Input() createPostInput: CreatePost,
     @Ctx() context: IAppContext,

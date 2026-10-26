@@ -1,7 +1,7 @@
 'use client';
 
 import { useTRPC } from '@/lib/trpc/client';
-import { formatRelativeTime, getImageUrl } from '@/lib/utils';
+import { cn, formatRelativeTime, getImageUrl } from '@/lib/utils';
 import {
   useMutation,
   useQueryClient,
@@ -13,8 +13,13 @@ import { toast } from 'sonner';
 import UserAvatar from '../shared/user-avatar';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
+import { useState } from 'react';
+import Comments from './comments';
 
 export default function Feed() {
+  const [expandedComments, setExpandedComments] = useState<Set<number>>(
+    new Set(),
+  );
   const trpc = useTRPC();
   const { data: posts } = useSuspenseQuery(
     trpc.postsRouter.findAll.queryOptions(),
@@ -52,6 +57,61 @@ export default function Feed() {
       },
     }),
   );
+
+  const updateCommentCount = (postId: number, change: number) => {
+    queryClient.setQueryData(postsKey, (old) =>
+      old?.map((post) =>
+        post.id === postId
+          ? { ...post, comments: post.comments + change }
+          : post,
+      ),
+    );
+  };
+
+  const addComment = useMutation(
+    trpc.commentsRouter.create.mutationOptions({
+      onSuccess: (_newComment, { postId }) => {
+        updateCommentCount(postId, 1);
+      },
+      onError: () => {
+        toast.error('Could not add comment');
+      },
+      onSettled: (_newComment, _error, { postId }) => {
+        queryClient.invalidateQueries({
+          queryKey: trpc.commentsRouter.findByPostId.queryKey({ postId }),
+        });
+      },
+    }),
+  );
+
+  const deleteComment = useMutation(
+    trpc.commentsRouter.delete.mutationOptions({
+      onSuccess: (deletedComment) => {
+        updateCommentCount(deletedComment.postId, -1);
+      },
+      onError: () => {
+        toast.error('Could not delete comment');
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({
+          queryKey: trpc.commentsRouter.findByPostId.queryKey(),
+        });
+      },
+    }),
+  );
+
+  const toggleComments = (postId: number) => {
+    setExpandedComments((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(postId)) {
+        newSet.delete(postId);
+      } else {
+        newSet.add(postId);
+      }
+
+      return newSet;
+    });
+  };
 
   return (
     <div className='space-y-6'>
@@ -96,16 +156,28 @@ export default function Feed() {
                     className='p-0 h-auto'
                   >
                     <Heart
-                      className={`size-6 ${isLiked ? 'fill-red-500 text-red-500' : 'text-foreground'}`}
+                      className={cn(
+                        'size-6',
+                        isLiked
+                          ? 'fill-red-500 text-red-500'
+                          : 'text-foreground',
+                      )}
                     />
                   </Button>
                   <Button
                     variant='ghost'
                     size='sm'
-                    onClick={() => {}}
+                    onClick={() => toggleComments(id)}
                     className='p-0 h-auto'
                   >
-                    <MessageCircle className='size-6 text-foreground' />
+                    <MessageCircle
+                      className={cn(
+                        'size-6',
+                        expandedComments.has(id)
+                          ? 'fill-primary text-primary'
+                          : 'text-foreground',
+                      )}
+                    />
                   </Button>
                 </div>
               </div>
@@ -117,10 +189,26 @@ export default function Feed() {
                 {caption}
               </div>
 
-              {comments > 0 && (
-                <div className='text-sm text-muted-foreground'>
+              {comments > 0 && !expandedComments.has(id) && (
+                <button
+                  type='button'
+                  className='text-sm text-muted-foreground'
+                  onClick={() => toggleComments(id)}
+                >
                   View all {comments} comments
-                </div>
+                </button>
+              )}
+
+              {expandedComments.has(id) && (
+                <Comments
+                  postId={id}
+                  onAddComment={(text) =>
+                    addComment.mutate({ postId: id, text })
+                  }
+                  onDeleteComment={(commentId) =>
+                    deleteComment.mutate({ commentId })
+                  }
+                />
               )}
 
               <time
