@@ -1,5 +1,6 @@
 'use client';
 
+import { PostModal } from '@/components/models/post-model';
 import ProfileHeader from '@/components/profile/profile-header';
 import { ProfileNavigation } from '@/components/profile/profile-navigation';
 import { ProfileTabs } from '@/components/profile/profile-tabs';
@@ -11,8 +12,11 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query';
+import { useState } from 'react';
 
 const ProfileClient = ({ userId }: { userId: string }) => {
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const profileQueryKey = trpc.usersRouter.getUserProfile.queryKey({ userId });
@@ -52,7 +56,8 @@ const ProfileClient = ({ userId }: { userId: string }) => {
   };
 
   const handlePostClick = (post: Post) => {
-    console.log(post);
+    setSelectedPost(post);
+    setIsModalOpen(true);
   };
 
   if (!profile) {
@@ -83,6 +88,14 @@ const ProfileClient = ({ userId }: { userId: string }) => {
           onPostClick={handlePostClick}
         />
       </div>
+
+      {selectedPost && (
+        <PostModal
+          post={selectedPost}
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+        />
+      )}
     </div>
   );
 };

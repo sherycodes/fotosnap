@@ -5,14 +5,13 @@ import { CommentsProps } from '@/lib/types';
 import { formatRelativeTime, getImageUrl } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { Trash } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import React, { useState } from 'react';
 import UserAvatar from '../shared/user-avatar';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 
 const Comments = ({ postId, onAddComment, onDeleteComment }: CommentsProps) => {
-  const router = useRouter();
   const trpc = useTRPC();
   const [commentText, setCommentText] = useState('');
   const { data: comments = [], isPending } = useQuery(
@@ -42,13 +41,12 @@ const Comments = ({ postId, onAddComment, onDeleteComment }: CommentsProps) => {
             <div className='flex-1 min-w-0'>
               <div className='flex items-center justify-between gap-2'>
                 <div className='flex-1 min-w-0'>
-                  <Button
-                    variant='ghost'
-                    onClick={() => router.push(`/users/${user.id}`)}
-                    className='font-semibold text-sm p-0 mt-1'
+                  <Link
+                    href={`/users/${user.id}`}
+                    className='font-semibold text-sm'
                   >
                     {user.username}
-                  </Button>
+                  </Link>
                   <p className='text-sm wrap-break-word'>{text}</p>
                   <time
                     dateTime={createdAt}

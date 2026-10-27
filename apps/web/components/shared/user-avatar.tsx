@@ -19,7 +19,7 @@ const UserAvatar = ({
       alt={username || 'My Profile Picture'}
       width={width || 64}
       height={height || 64}
-      className={cn('size-8 rounded-full', className)}
+      className={cn('size-8 rounded-full object-cover', className)}
     />
   ) : (
     <div

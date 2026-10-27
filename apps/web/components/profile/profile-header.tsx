@@ -24,7 +24,7 @@ export default function ProfileHeader({
             username={profile.name}
             width={150}
             height={150}
-            className='size-32 md:w-40 md:h-40 object-cover border-2'
+            className='size-32 md:w-40 md:h-40 border-2'
             iconClassName='size-16'
           />
         </div>

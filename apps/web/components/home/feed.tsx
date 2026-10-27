@@ -1,19 +1,16 @@
 'use client';
 
+import { usePostActions } from '@/hooks/usePostActions';
 import { useTRPC } from '@/lib/trpc/client';
 import { cn, formatRelativeTime, getImageUrl } from '@/lib/utils';
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { Heart, MessageCircle } from 'lucide-react';
 import Image from 'next/image';
-import { toast } from 'sonner';
+import Link from 'next/link';
+import { useState } from 'react';
 import UserAvatar from '../shared/user-avatar';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { useState } from 'react';
 import Comments from './comments';
 
 export default function Feed() {
@@ -25,80 +22,7 @@ export default function Feed() {
     trpc.postsRouter.findAll.queryOptions(),
   );
 
-  const queryClient = useQueryClient();
-  const postsKey = trpc.postsRouter.findAll.queryKey();
-  const toggleLike = useMutation(
-    trpc.postsRouter.likePost.mutationOptions({
-      onMutate: async ({ postId }) => {
-        await queryClient.cancelQueries({ queryKey: postsKey });
-        const previousPosts = queryClient.getQueryData(postsKey);
-        queryClient.setQueryData(postsKey, (old) =>
-          old?.map((post) =>
-            post.id === postId
-              ? {
-                  ...post,
-                  isLiked: !post.isLiked,
-                  likes: post.likes + (post.isLiked ? -1 : 1),
-                }
-              : post,
-          ),
-        );
-
-        return { previousPosts };
-      },
-      onError: (_err, _vars, context) => {
-        if (context?.previousPosts) {
-          queryClient.setQueryData(postsKey, context.previousPosts);
-        }
-        toast.error('Could not update like');
-      },
-      onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: postsKey });
-      },
-    }),
-  );
-
-  const updateCommentCount = (postId: number, change: number) => {
-    queryClient.setQueryData(postsKey, (old) =>
-      old?.map((post) =>
-        post.id === postId
-          ? { ...post, comments: post.comments + change }
-          : post,
-      ),
-    );
-  };
-
-  const addComment = useMutation(
-    trpc.commentsRouter.create.mutationOptions({
-      onSuccess: (_newComment, { postId }) => {
-        updateCommentCount(postId, 1);
-      },
-      onError: () => {
-        toast.error('Could not add comment');
-      },
-      onSettled: (_newComment, _error, { postId }) => {
-        queryClient.invalidateQueries({
-          queryKey: trpc.commentsRouter.findByPostId.queryKey({ postId }),
-        });
-      },
-    }),
-  );
-
-  const deleteComment = useMutation(
-    trpc.commentsRouter.delete.mutationOptions({
-      onSuccess: (deletedComment) => {
-        updateCommentCount(deletedComment.postId, -1);
-      },
-      onError: () => {
-        toast.error('Could not delete comment');
-      },
-      onSettled: () => {
-        queryClient.invalidateQueries({
-          queryKey: trpc.commentsRouter.findByPostId.queryKey(),
-        });
-      },
-    }),
-  );
+  const { deleteComment, addComment, toggleLike } = usePostActions();
 
   const toggleComments = (postId: number) => {
     setExpandedComments((prev) => {
@@ -134,7 +58,12 @@ export default function Feed() {
                   username={username}
                   userId={userId}
                 />
-                <span className='font-semibold text-sm'>{username}</span>
+                <Link
+                  href={`/users/${userId}`}
+                  className='font-semibold text-sm'
+                >
+                  {username}
+                </Link>
               </div>
             </div>
 

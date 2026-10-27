@@ -106,7 +106,7 @@ export const StoryViewer = ({
           <div className='absolute top-4 left-0 right-0 z-20 flex items-center justify-between px-4 pt-2'>
             <Link
               href={`/users/${currentGroup.userId}`}
-              className='flex items-center space-x-3 hover:opacity-80 transition-opacity outline-none'
+              className='flex items-center space-x-3 outline-none'
             >
               <UserAvatar
                 avatar={getImageUrl(currentGroup.avatar)}
