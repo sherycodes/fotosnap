@@ -57,6 +57,7 @@ export default function Sidebar() {
               avatar={
                 session?.user.image ? getImageUrl(session.user.image) : null
               }
+              userId={session?.user.id}
               className='size-16'
               iconClassName='size-6'
             />

@@ -32,18 +32,13 @@ const Comments = ({ postId, onAddComment, onDeleteComment }: CommentsProps) => {
       <div className='space-y-3 max-h-64 overflow-y-auto'>
         {comments.map(({ id, user, text, createdAt }) => (
           <div className='flex space-x-2' key={id}>
-            <Button
-              type='button'
-              variant='ghost'
-              className='p-0 pt-3'
-              onClick={() => router.push(`/users/${user.id}`)}
-            >
+            <div className='pt-1 shrink-0'>
               <UserAvatar
                 avatar={getImageUrl(user.avatar)}
                 username={user.username}
-                className='shrink-0'
+                userId={user.id}
               />
-            </Button>
+            </div>
             <div className='flex-1 min-w-0'>
               <div className='flex items-center justify-between gap-2'>
                 <div className='flex-1 min-w-0'>

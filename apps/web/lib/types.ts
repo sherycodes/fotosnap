@@ -1,4 +1,5 @@
-import { StoryGroup } from '@repo/trpc/schemas';
+import { Post, StoryGroup, UserProfile } from '@repo/trpc/schemas';
+import { LucideIcon } from 'lucide-react';
 
 export interface Story {
   id: string;
@@ -9,7 +10,10 @@ export interface Story {
 export interface UserAvatarProps {
   avatar: string | null;
   username?: string;
+  userId?: string;
   className?: string;
+  width?: number;
+  height?: number;
   iconClassName?: string;
 }
 
@@ -44,4 +48,28 @@ export interface StoryViewerProps {
   open: boolean;
   initialGroupIndex: number;
   onOpenChange: (open: boolean) => void;
+}
+
+export interface ProfileHeaderProps {
+  profile: UserProfile;
+  onFollowToggle: () => void;
+  isFollowLoading: boolean;
+}
+
+export interface PostGridProps {
+  posts: Post[];
+  onPostClick: (post: Post) => void;
+}
+
+export interface EmptyStateProps {
+  icon?: LucideIcon;
+  title: string;
+  description: string;
+}
+
+export interface ProfileTabsProps {
+  userPosts: Post[];
+  savedPosts: Post[];
+  name: string;
+  onPostClick: (post: Post) => void;
 }

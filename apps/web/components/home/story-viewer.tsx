@@ -2,6 +2,7 @@ import { StoryViewerProps } from '@/lib/types';
 import { getImageUrl } from '@/lib/utils';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import UserAvatar from '../shared/user-avatar';
 import { Button } from '../ui/button';
@@ -103,7 +104,10 @@ export const StoryViewer = ({
           </div>
 
           <div className='absolute top-4 left-0 right-0 z-20 flex items-center justify-between px-4 pt-2'>
-            <button className='flex items-center space-x-3 hover:opacity-80 transition-opacity outline-none'>
+            <Link
+              href={`/users/${currentGroup.userId}`}
+              className='flex items-center space-x-3 hover:opacity-80 transition-opacity outline-none'
+            >
               <UserAvatar
                 avatar={getImageUrl(currentGroup.avatar)}
                 username={currentGroup.username}
@@ -113,7 +117,7 @@ export const StoryViewer = ({
                   {currentGroup.username}
                 </div>
               </div>
-            </button>
+            </Link>
 
             <div className='flex items-center gap-2'>
               <Button

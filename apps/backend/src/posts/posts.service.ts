@@ -39,19 +39,21 @@ export class PostsService {
     }
   }
 
-  async findAll(userId: string): Promise<Post[]> {
+  async findAll(userId: string, postUserId?: string): Promise<Post[]> {
     const posts = await this.db.query.post.findMany({
       with: {
         user: true,
         likes: true,
         comments: true,
       },
+      where: postUserId ? eq(post.userId, postUserId) : undefined,
       orderBy: [desc(post.createdAt)],
     });
 
     return posts.map((savedPost) => ({
       id: savedPost.id,
       user: {
+        id: savedPost.user.id,
         username: savedPost.user.name,
         avatar: savedPost.user.image || '',
       },

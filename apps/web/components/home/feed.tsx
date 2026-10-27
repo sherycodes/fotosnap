@@ -124,7 +124,7 @@ export default function Feed() {
           caption,
           createdAt,
           isLiked,
-          user: { avatar, username },
+          user: { id: userId, avatar, username },
         }) => (
           <Card key={id} className='overflow-hidden'>
             <div className='flex items-center justify-between p-4'>
@@ -132,6 +132,7 @@ export default function Feed() {
                 <UserAvatar
                   avatar={avatar ? getImageUrl(avatar) : null}
                   username={username}
+                  userId={userId}
                 />
                 <span className='font-semibold text-sm'>{username}</span>
               </div>
