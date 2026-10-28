@@ -13,6 +13,7 @@ import {
 export default function ProfileHeader({
   profile,
   onFollowToggle,
+  onEditProfile,
   isFollowLoading,
 }: ProfileHeaderProps) {
   return (
@@ -47,7 +48,7 @@ export default function ProfileHeader({
                   <Settings className='size-4' />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end'>
-                  <DropdownMenuItem onClick={() => {}}>
+                  <DropdownMenuItem onClick={onEditProfile}>
                     <Edit className='size-4 mr-2' />
                     Edit Profile
                   </DropdownMenuItem>

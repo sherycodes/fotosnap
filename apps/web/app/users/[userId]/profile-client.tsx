@@ -1,12 +1,13 @@
 'use client';
 
+import { EditProfileModal } from '@/components/modals/edit-profile';
 import { PostModal } from '@/components/modals/post-modal';
 import ProfileHeader from '@/components/profile/profile-header';
 import { ProfileNavigation } from '@/components/profile/profile-navigation';
 import { ProfileTabs } from '@/components/profile/profile-tabs';
 import EmptyState from '@/components/shared/empty-state';
 import { useTRPC } from '@/lib/trpc/client';
-import { Post } from '@repo/trpc/schemas';
+import { Post, UpdateProfileInput } from '@repo/trpc/schemas';
 import {
   useMutation,
   useQueryClient,
@@ -16,6 +17,7 @@ import { useState } from 'react';
 
 const ProfileClient = ({ userId }: { userId: string }) => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -44,6 +46,14 @@ const ProfileClient = ({ userId }: { userId: string }) => {
     }),
   );
 
+  const updateProfileMutation = useMutation(
+    trpc.usersRouter.updateProfile.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: profileQueryKey });
+      },
+    }),
+  );
+
   const handleFollowToggle = () => {
     if (!profile) {
       return;
@@ -58,6 +68,10 @@ const ProfileClient = ({ userId }: { userId: string }) => {
   const handlePostClick = (post: Post) => {
     setSelectedPost(post);
     setIsModalOpen(true);
+  };
+
+  const handleSaveProfile = (data: UpdateProfileInput) => {
+    updateProfileMutation.mutate(data);
   };
 
   if (!profile) {
@@ -76,7 +90,7 @@ const ProfileClient = ({ userId }: { userId: string }) => {
         <ProfileHeader
           profile={profile}
           onFollowToggle={handleFollowToggle}
-
+          onEditProfile={() => setIsEditProfileOpen(true)}
           isFollowLoading={
             followMutation.isPending || unfollowMutation.isPending
           }
@@ -96,6 +110,13 @@ const ProfileClient = ({ userId }: { userId: string }) => {
           onOpenChange={setIsModalOpen}
         />
       )}
+
+      <EditProfileModal
+        open={isEditProfileOpen}
+        onOpenChange={setIsEditProfileOpen}
+        profile={profile}
+        onSave={handleSaveProfile}
+      />
     </div>
   );
 };

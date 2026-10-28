@@ -1,4 +1,9 @@
-import { Post, StoryGroup, UserProfile } from '@repo/trpc/schemas';
+import {
+  Post,
+  StoryGroup,
+  UpdateProfileInput,
+  UserProfile,
+} from '@repo/trpc/schemas';
 import { LucideIcon } from 'lucide-react';
 
 export interface Story {
@@ -53,6 +58,7 @@ export interface StoryViewerProps {
 export interface ProfileHeaderProps {
   profile: UserProfile;
   onFollowToggle: () => void;
+  onEditProfile: () => void;
   isFollowLoading: boolean;
 }
 
@@ -72,4 +78,11 @@ export interface ProfileTabsProps {
   savedPosts: Post[];
   name: string;
   onPostClick: (post: Post) => void;
+}
+
+export interface EditProfileModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  profile: UserProfile;
+  onSave: (updates: UpdateProfileInput) => void;
 }
