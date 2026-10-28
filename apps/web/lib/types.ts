@@ -59,6 +59,8 @@ export interface ProfileHeaderProps {
   profile: UserProfile;
   onFollowToggle: () => void;
   onEditProfile: () => void;
+  onOpenFollowers: () => void;
+  onOpenFollowing: () => void;
   isFollowLoading: boolean;
 }
 
@@ -85,4 +87,11 @@ export interface EditProfileModalProps {
   onOpenChange: (open: boolean) => void;
   profile: UserProfile;
   onSave: (updates: UpdateProfileInput) => void;
+}
+
+export interface FollowersFollowingModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  userId: string;
+  type: 'followers' | 'following';
 }

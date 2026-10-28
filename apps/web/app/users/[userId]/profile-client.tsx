@@ -1,6 +1,7 @@
 'use client';
 
 import { EditProfileModal } from '@/components/modals/edit-profile';
+import { FollowersFollowingModal } from '@/components/modals/followers-following-modal';
 import { PostModal } from '@/components/modals/post-modal';
 import ProfileHeader from '@/components/profile/profile-header';
 import { ProfileNavigation } from '@/components/profile/profile-navigation';
@@ -18,10 +19,19 @@ import { useState } from 'react';
 const ProfileClient = ({ userId }: { userId: string }) => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [followersFollowingModal, setFollowersFollowingModal] = useState<{
+    open: boolean;
+    type: 'followers' | 'following';
+  }>({
+    open: false,
+    type: 'followers',
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const profileQueryKey = trpc.usersRouter.getUserProfile.queryKey({ userId });
+  const followersQueryKey = trpc.usersRouter.getFollowers.queryKey({ userId });
+  const followingQueryKey = trpc.usersRouter.getFollowing.queryKey({ userId });
   const { data: profile } = useSuspenseQuery(
     trpc.usersRouter.getUserProfile.queryOptions({ userId }),
   );
@@ -33,7 +43,15 @@ const ProfileClient = ({ userId }: { userId: string }) => {
   const unfollowMutation = useMutation(
     trpc.usersRouter.unfollow.mutationOptions({
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: profileQueryKey });
+        queryClient.invalidateQueries({
+          queryKey: followersQueryKey,
+        });
+        queryClient.invalidateQueries({
+          queryKey: followingQueryKey,
+        });
+        queryClient.invalidateQueries({
+          queryKey: profileQueryKey,
+        });
       },
     }),
   );
@@ -41,7 +59,15 @@ const ProfileClient = ({ userId }: { userId: string }) => {
   const followMutation = useMutation(
     trpc.usersRouter.follow.mutationOptions({
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: profileQueryKey });
+        queryClient.invalidateQueries({
+          queryKey: followersQueryKey,
+        });
+        queryClient.invalidateQueries({
+          queryKey: followingQueryKey,
+        });
+        queryClient.invalidateQueries({
+          queryKey: profileQueryKey,
+        });
       },
     }),
   );
@@ -94,6 +120,12 @@ const ProfileClient = ({ userId }: { userId: string }) => {
           isFollowLoading={
             followMutation.isPending || unfollowMutation.isPending
           }
+          onOpenFollowers={() =>
+            setFollowersFollowingModal({ open: true, type: 'followers' })
+          }
+          onOpenFollowing={() =>
+            setFollowersFollowingModal({ open: true, type: 'following' })
+          }
         />
         <ProfileTabs
           userPosts={posts}
@@ -116,6 +148,15 @@ const ProfileClient = ({ userId }: { userId: string }) => {
         onOpenChange={setIsEditProfileOpen}
         profile={profile}
         onSave={handleSaveProfile}
+      />
+
+      <FollowersFollowingModal
+        open={followersFollowingModal.open}
+        onOpenChange={(open) => {
+          setFollowersFollowingModal({ ...followersFollowingModal, open });
+        }}
+        userId={userId}
+        type={followersFollowingModal.type}
       />
     </div>
   );

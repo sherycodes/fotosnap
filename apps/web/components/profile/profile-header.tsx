@@ -14,6 +14,8 @@ export default function ProfileHeader({
   profile,
   onFollowToggle,
   onEditProfile,
+  onOpenFollowers,
+  onOpenFollowing,
   isFollowLoading,
 }: ProfileHeaderProps) {
   return (
@@ -62,11 +64,19 @@ export default function ProfileHeader({
               <span className='font-semibold'>{profile.postCount}</span>{' '}
               <span className='text-muted-foreground'>posts</span>
             </div>
-            <Button variant='ghost' onClick={() => {}} className='h-auto p-0'>
+            <Button
+              variant='ghost'
+              onClick={onOpenFollowers}
+              className='h-auto p-0 hover:bg-transparent dark:hover:bg-transparent'
+            >
               <span className='font-semibold'>{profile.followerCount}</span>{' '}
               <span className='text-muted-foreground'>followers</span>
             </Button>
-            <Button variant='ghost' onClick={() => {}} className='h-auto p-0'>
+            <Button
+              variant='ghost'
+              onClick={onOpenFollowing}
+              className='h-auto p-0 hover:bg-transparent dark:hover:bg-transparent'
+            >
               <span className='font-semibold'>{profile.followingCount}</span>{' '}
               <span className='text-muted-foreground'>following</span>
             </Button>

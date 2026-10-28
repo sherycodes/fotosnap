@@ -4,7 +4,6 @@ import {
   type UserIdInput,
   userIdSchema,
   userProfileSchema,
-  userSchema,
 } from '@repo/trpc/schemas';
 import {
   Ctx,
@@ -34,17 +33,17 @@ export class UsersRouter {
     return this.usersService.unfollow(ctx.user.id, input.userId);
   }
 
-  @Query({ input: userIdSchema, output: z.array(userSchema) })
-  async getFollowers(@Input() input: UserIdInput) {
-    return this.usersService.getFollowers(input.userId);
+  @Query({ input: userIdSchema, output: z.array(userProfileSchema) })
+  async getFollowers(@Input() input: UserIdInput, @Ctx() ctx: IAppContext) {
+    return this.usersService.getFollowers(input.userId, ctx.user.id);
   }
 
-  @Query({ input: userIdSchema, output: z.array(userSchema) })
-  async getFollowing(@Input() input: UserIdInput) {
-    return this.usersService.getFollowing(input.userId);
+  @Query({ input: userIdSchema, output: z.array(userProfileSchema) })
+  async getFollowing(@Input() input: UserIdInput, @Ctx() ctx: IAppContext) {
+    return this.usersService.getFollowing(input.userId, ctx.user.id);
   }
 
-  @Query({ output: z.array(userSchema) })
+  @Query({ output: z.array(userProfileSchema) })
   async getSuggestedUsers(@Ctx() ctx: IAppContext) {
     return this.usersService.getSuggestedUsers(ctx.user.id);
   }
