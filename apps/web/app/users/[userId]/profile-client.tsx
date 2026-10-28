@@ -1,6 +1,6 @@
 'use client';
 
-import { PostModal } from '@/components/models/post-model';
+import { PostModal } from '@/components/modals/post-modal';
 import ProfileHeader from '@/components/profile/profile-header';
 import { ProfileNavigation } from '@/components/profile/profile-navigation';
 import { ProfileTabs } from '@/components/profile/profile-tabs';

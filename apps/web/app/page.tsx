@@ -1,7 +1,7 @@
 import Feed from '@/components/home/feed';
 import Sidebar from '@/components/home/sidebar';
 import Stories from '@/components/home/stories';
-import PhotoUpload from '@/components/models/photo-upload';
+import PhotoUpload from '@/components/modals/photo-upload';
 import { HydrateClient, prefetch, trpc } from '@/lib/trpc/server';
 import { Suspense } from 'react';
 

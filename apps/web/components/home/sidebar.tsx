@@ -9,7 +9,7 @@ import { Camera, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import AvatarUpload from '../models/avatar-upload';
+import AvatarUpload from '../modals/avatar-upload';
 import UserAvatar from '../shared/user-avatar';
 import { ThemeToggle } from '../theme/theme-toggle';
 import { Button } from '../ui/button';
