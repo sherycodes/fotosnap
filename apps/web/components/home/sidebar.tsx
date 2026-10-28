@@ -1,12 +1,10 @@
 'use client';
 
 import { authClient } from '@/lib/auth/client';
-import { mockSuggestions } from '@/lib/constants';
 import { useTRPC } from '@/lib/trpc/client';
 import { getImageUrl } from '@/lib/utils';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Camera, LogOut } from 'lucide-react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import AvatarUpload from '../modals/avatar-upload';
@@ -14,12 +12,27 @@ import UserAvatar from '../shared/user-avatar';
 import { ThemeToggle } from '../theme/theme-toggle';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
+import Link from 'next/link';
 
 export default function Sidebar() {
   const { data: session } = authClient.useSession();
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+
+  const { data: suggestedUsers = [] } = useQuery(
+    trpc.usersRouter.getSuggestedUsers.queryOptions(),
+  );
+
+  const followMutation = useMutation(
+    trpc.usersRouter.follow.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: trpc.usersRouter.getSuggestedUsers.queryKey(),
+        });
+      },
+    }),
+  );
 
   const router = useRouter();
 
@@ -101,32 +114,46 @@ export default function Sidebar() {
         </div>
 
         <div className='space-y-3'>
-          {mockSuggestions.map((user) => (
-            <div key={user.id} className='flex items-center space-x-3'>
-              <Image
-                src={user.avatar}
-                alt={user.username}
-                className='size-8 rounded-full'
-                width={40}
-                height={40}
-              />
-              <div className='flex-1 min-w-0'>
-                <div className='font-semibold text-sm'>{user.username}</div>
-                {user.followedBy && (
-                  <div className='text-xs text-muted-foreground'>
-                    Followed by {user.followedBy}
+          {suggestedUsers.length === 0 ? (
+            <p className='text-sm text-muted-foreground'>
+              No suggestions available
+            </p>
+          ) : (
+            suggestedUsers.map((user) => (
+              <div key={user.id} className='flex items-center justify-between'>
+                <Link
+                  href={`/users/${user.id}`}
+                  className='flex items-center gap-3'
+                >
+                  <UserAvatar
+                    avatar={getImageUrl(user.image)}
+                    username={user.name}
+                    width={40}
+                    height={40}
+                  />
+
+                  <div className='min-w-0 text-left'>
+                    <div className='font-semibold text-sm'>{user.name}</div>
+                    {user.bio && (
+                      <div className='text-xs text-muted-foreground truncate'>
+                        {user.bio}
+                      </div>
+                    )}
                   </div>
-                )}
+                </Link>
+
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='bg-primary text-muted hover:text-muted/90 hover:bg-primary/90 dark:hover:bg-primary/90 dark:hover:text-muted/90 text-xs'
+                  onClick={() => followMutation.mutate({ userId: user.id })}
+                  disabled={followMutation.isPending}
+                >
+                  Follow
+                </Button>
               </div>
-              <Button
-                variant='ghost'
-                size='sm'
-                className='text-primary hover:text-primary/90 text-xs'
-              >
-                Follow
-              </Button>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </Card>
 
