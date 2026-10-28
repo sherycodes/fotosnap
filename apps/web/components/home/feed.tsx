@@ -4,7 +4,7 @@ import { usePostActions } from '@/hooks/usePostActions';
 import { useTRPC } from '@/lib/trpc/client';
 import { cn, formatRelativeTime, getImageUrl } from '@/lib/utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { Heart, MessageCircle } from 'lucide-react';
+import { Bookmark, Heart, MessageCircle } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -22,7 +22,8 @@ export default function Feed() {
     trpc.postsRouter.findAll.queryOptions(),
   );
 
-  const { deleteComment, addComment, toggleLike } = usePostActions();
+  const { deleteComment, addComment, toggleLike, toggleBookmark } =
+    usePostActions();
 
   const toggleComments = (postId: number) => {
     setExpandedComments((prev) => {
@@ -48,6 +49,7 @@ export default function Feed() {
           caption,
           createdAt,
           isLiked,
+          isSaved,
           user: { id: userId, avatar, username },
         }) => (
           <Card key={id} className='overflow-hidden'>
@@ -110,6 +112,16 @@ export default function Feed() {
                     />
                   </Button>
                 </div>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={() => toggleBookmark.mutate({ postId: id })}
+                  className='p-0 h-auto'
+                >
+                  <Bookmark
+                    className={cn('size-6', isSaved && 'fill-foreground')}
+                  />
+                </Button>
               </div>
 
               <div className='text-sm font-semibold'>{likes} likes</div>

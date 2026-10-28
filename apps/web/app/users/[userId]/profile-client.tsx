@@ -7,6 +7,7 @@ import ProfileHeader from '@/components/profile/profile-header';
 import { ProfileNavigation } from '@/components/profile/profile-navigation';
 import { ProfileTabs } from '@/components/profile/profile-tabs';
 import EmptyState from '@/components/shared/empty-state';
+import { authClient } from '@/lib/auth/client';
 import { useTRPC } from '@/lib/trpc/client';
 import { Post, UpdateProfileInput } from '@repo/trpc/schemas';
 import {
@@ -17,6 +18,7 @@ import {
 import { useState } from 'react';
 
 const ProfileClient = ({ userId }: { userId: string }) => {
+  const { data: session } = authClient.useSession();
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [followersFollowingModal, setFollowersFollowingModal] = useState<{
@@ -38,6 +40,10 @@ const ProfileClient = ({ userId }: { userId: string }) => {
 
   const { data: posts = [] } = useSuspenseQuery(
     trpc.postsRouter.findAll.queryOptions({ userId }),
+  );
+
+  const { data: bookmarks = [] } = useSuspenseQuery(
+    trpc.postsRouter.getBookmarks.queryOptions(),
   );
 
   const unfollowMutation = useMutation(
@@ -126,12 +132,14 @@ const ProfileClient = ({ userId }: { userId: string }) => {
           onOpenFollowing={() =>
             setFollowersFollowingModal({ open: true, type: 'following' })
           }
+          isOwnProfile={session?.user.id === profile.id}
         />
         <ProfileTabs
           userPosts={posts}
-          savedPosts={[]}
+          bookmarks={bookmarks}
           name={profile.name}
           onPostClick={handlePostClick}
+          isOwnProfile={session?.user.id === profile.id}
         />
       </div>
 

@@ -15,6 +15,10 @@ export const likePostSchema = z.object({
   postId: z.number(),
 });
 
+export const bookmarkPostSchema = z.object({
+  postId: z.number(),
+});
+
 export const postSchema = z.object({
   id: z.number(),
   user: z.object({
@@ -28,9 +32,11 @@ export const postSchema = z.object({
   comments: z.number(),
   createdAt: z.string(),
   isLiked: z.boolean().optional(),
+  isSaved: z.boolean().optional(),
 });
 
 export type Post = z.infer<typeof postSchema>;
 export type CreatePost = z.infer<typeof createPostSchema>;
 export type LikePost = z.infer<typeof likePostSchema>;
+export type BookmarkPost = z.infer<typeof bookmarkPostSchema>;
 export type FindAllPostsInput = z.infer<typeof findAllPostsSchema>;

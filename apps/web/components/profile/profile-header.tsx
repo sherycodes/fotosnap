@@ -17,6 +17,7 @@ export default function ProfileHeader({
   onOpenFollowers,
   onOpenFollowing,
   isFollowLoading,
+  isOwnProfile,
 }: ProfileHeaderProps) {
   return (
     <div className='mb-8'>
@@ -43,19 +44,21 @@ export default function ProfileHeader({
               >
                 {profile.isFollowing ? 'Following' : 'Follow'}
               </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={<Button variant='outline' size='icon' />}
-                >
-                  <Settings className='size-4' />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
-                  <DropdownMenuItem onClick={onEditProfile}>
-                    <Edit className='size-4 mr-2' />
-                    Edit Profile
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {isOwnProfile && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={<Button variant='outline' size='icon' />}
+                  >
+                    <Settings className='size-4' />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align='end'>
+                    <DropdownMenuItem onClick={onEditProfile}>
+                      <Edit className='size-4 mr-2' />
+                      Edit Profile
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </div>
 

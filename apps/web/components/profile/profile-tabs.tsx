@@ -6,8 +6,9 @@ import { PostsGrid } from './posts-grid';
 
 export function ProfileTabs({
   userPosts,
-  savedPosts,
+  bookmarks,
   name,
+  isOwnProfile,
   onPostClick,
 }: ProfileTabsProps) {
   return (
@@ -17,10 +18,12 @@ export function ProfileTabs({
           <Grid className='size-4' />
           POSTS
         </TabsTrigger>
-        <TabsTrigger value='saved' className='gap-2'>
-          <Bookmark className='size-4' />
-          SAVED
-        </TabsTrigger>
+        {isOwnProfile && (
+          <TabsTrigger value='saved' className='gap-2'>
+            <Bookmark className='size-4' />
+            SAVED
+          </TabsTrigger>
+        )}
       </TabsList>
 
       <TabsContent value='posts' className='mt-6'>
@@ -34,17 +37,19 @@ export function ProfileTabs({
           <PostsGrid posts={userPosts} onPostClick={onPostClick} />
         )}
       </TabsContent>
-      <TabsContent value='saved' className='mt-6'>
-        {savedPosts.length === 0 ? (
-          <EmptyState
-            icon={Bookmark}
-            title='No Saved Posts'
-            description={`Save photos and videos to see them here`}
-          />
-        ) : (
-          <PostsGrid posts={savedPosts} onPostClick={onPostClick} />
-        )}
-      </TabsContent>
+      {isOwnProfile && (
+        <TabsContent value='saved' className='mt-6'>
+          {bookmarks.length === 0 ? (
+            <EmptyState
+              icon={Bookmark}
+              title='No Saved Posts'
+              description='Save photos and videos to see them here'
+            />
+          ) : (
+            <PostsGrid posts={bookmarks} onPostClick={onPostClick} />
+          )}
+        </TabsContent>
+      )}
     </Tabs>
   );
 }

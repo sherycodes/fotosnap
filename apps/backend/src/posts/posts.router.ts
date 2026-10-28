@@ -1,8 +1,10 @@
 import {
+  bookmarkPostSchema,
   createPostSchema,
   findAllPostsSchema,
   likePostSchema,
   postSchema,
+  type BookmarkPost,
   type CreatePost,
   type FindAllPostsInput,
   type LikePost,
@@ -38,7 +40,10 @@ export class PostsRouter {
     @Ctx() context: IAppContext,
     @Input() findAllPostsInput: FindAllPostsInput,
   ) {
-    return this.postsService.findAll(context.user.id, findAllPostsInput?.userId);
+    return this.postsService.findAll(
+      context.user.id,
+      findAllPostsInput?.userId,
+    );
   }
 
   @Mutation({ input: likePostSchema })
@@ -47,5 +52,21 @@ export class PostsRouter {
     @Ctx() context: IAppContext,
   ) {
     return this.postsService.likePost(likePostInput.postId, context.user.id);
+  }
+
+  @Mutation({ input: bookmarkPostSchema })
+  async bookmarkPost(
+    @Input() bookmarkPostInput: BookmarkPost,
+    @Ctx() context: IAppContext,
+  ) {
+    return this.postsService.bookmarkPost(
+      bookmarkPostInput.postId,
+      context.user.id,
+    );
+  }
+
+  @Query({ output: z.array(postSchema) })
+  async getBookmarks(@Ctx() context: IAppContext) {
+    return this.postsService.getBookmarks(context.user.id);
   }
 }

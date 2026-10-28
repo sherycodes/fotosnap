@@ -9,6 +9,7 @@ export function usePostActions() {
 
   const queryClient = useQueryClient();
   const postsKey = trpc.postsRouter.findAll.queryKey();
+  const bookmarksKey = trpc.postsRouter.getBookmarks.queryKey();
   const toggleLike = useMutation(
     trpc.postsRouter.likePost.mutationOptions({
       onMutate: async ({ postId }) => {
@@ -36,6 +37,37 @@ export function usePostActions() {
       },
       onSettled: () => {
         queryClient.invalidateQueries({ queryKey: postsKey });
+      },
+    }),
+  );
+
+  const toggleBookmark = useMutation(
+    trpc.postsRouter.bookmarkPost.mutationOptions({
+      onMutate: async ({ postId }) => {
+        await queryClient.cancelQueries({ queryKey: postsKey });
+        const previousPosts = queryClient.getQueryData(postsKey);
+        queryClient.setQueryData(postsKey, (old) =>
+          old?.map((post) =>
+            post.id === postId
+              ? {
+                  ...post,
+                  isSaved: !post.isSaved,
+                }
+              : post,
+          ),
+        );
+
+        return { previousPosts };
+      },
+      onError: (_err, _vars, context) => {
+        if (context?.previousPosts) {
+          queryClient.setQueryData(postsKey, context.previousPosts);
+        }
+        toast.error('Could not update bookmark');
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: postsKey });
+        queryClient.invalidateQueries({ queryKey: bookmarksKey });
       },
     }),
   );
@@ -82,5 +114,5 @@ export function usePostActions() {
     }),
   );
 
-  return { deleteComment, addComment, toggleLike };
+  return { deleteComment, addComment, toggleLike, toggleBookmark };
 }

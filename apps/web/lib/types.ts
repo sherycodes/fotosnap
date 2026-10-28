@@ -62,6 +62,7 @@ export interface ProfileHeaderProps {
   onOpenFollowers: () => void;
   onOpenFollowing: () => void;
   isFollowLoading: boolean;
+  isOwnProfile: boolean;
 }
 
 export interface PostGridProps {
@@ -77,8 +78,9 @@ export interface EmptyStateProps {
 
 export interface ProfileTabsProps {
   userPosts: Post[];
-  savedPosts: Post[];
+  bookmarks: Post[];
   name: string;
+  isOwnProfile: boolean;
   onPostClick: (post: Post) => void;
 }
 

@@ -27,10 +27,29 @@ const appRouter = t.router({
         comments: z.number(),
         createdAt: z.string(),
         isLiked: z.boolean().optional(),
+        isSaved: z.boolean().optional(),
       }))).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     likePost: publicProcedure.input(z.object({
       postId: z.number(),
-    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    bookmarkPost: publicProcedure.input(z.object({
+      postId: z.number(),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    getBookmarks: publicProcedure.output(z.array(z.object({
+      id: z.number(),
+      user: z.object({
+        id: z.string(),
+        username: z.string(),
+        avatar: z.string(),
+      }),
+      image: z.string(),
+      caption: z.string(),
+      likes: z.number(),
+      comments: z.number(),
+      createdAt: z.string(),
+      isLiked: z.boolean().optional(),
+      isSaved: z.boolean().optional(),
+    }))).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
   }),
   usersRouter: t.router({
     follow: publicProcedure.input(z.object({

@@ -7,8 +7,8 @@ export const post = pgTable('posts', {
   id: serial().primaryKey(),
   image: text().notNull(),
   caption: text().notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true })
-    .defaultNow()
+  createdAt: timestamp('created_at')
+    .$defaultFn(() => new Date())
     .notNull(),
   userId: text('user_id')
     .notNull()
@@ -22,6 +22,7 @@ export const postRelations = relations(post, ({ one, many }) => ({
   }),
   likes: many(like),
   comments: many(comment),
+  bookmarks: many(bookmark),
 }));
 
 export const like = pgTable('likes', {
@@ -41,6 +42,30 @@ export const likeRelations = relations(like, ({ one }) => ({
   }),
   post: one(post, {
     fields: [like.postId],
+    references: [post.id],
+  }),
+}));
+
+export const bookmark = pgTable('bookmarks', {
+  id: serial().primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id),
+  postId: integer('post_id')
+    .notNull()
+    .references(() => post.id),
+  createdAt: timestamp('created_at')
+    .$defaultFn(() => new Date())
+    .notNull(),
+});
+
+export const bookmarkRelations = relations(bookmark, ({ one }) => ({
+  user: one(user, {
+    fields: [bookmark.userId],
+    references: [user.id],
+  }),
+  post: one(post, {
+    fields: [bookmark.postId],
     references: [post.id],
   }),
 }));

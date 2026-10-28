@@ -3,10 +3,10 @@
 import { usePostActions } from '@/hooks/usePostActions';
 import { authClient } from '@/lib/auth/client';
 import { useTRPC } from '@/lib/trpc/client';
-import { formatRelativeTime, getImageUrl } from '@/lib/utils';
+import { cn, formatRelativeTime, getImageUrl } from '@/lib/utils';
 import { Post } from '@repo/trpc/schemas';
 import { useQuery } from '@tanstack/react-query';
-import { Heart, Trash2 } from 'lucide-react';
+import { Bookmark, Heart, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -39,7 +39,8 @@ export function PostModal({
   );
   const { data: session } = authClient.useSession();
 
-  const { deleteComment, addComment, toggleLike } = usePostActions();
+  const { deleteComment, addComment, toggleLike, toggleBookmark } =
+    usePostActions();
 
   const handleDeleteComment = async (commentId: number) => {
     await deleteComment.mutateAsync({ commentId });
@@ -181,10 +182,21 @@ export function PostModal({
                       className={`size-6 ${post.isLiked ? 'fill-red-500 text-red-500' : ''}`}
                     />
                   </Button>
+                  <div className='font-semibold text-sm'>
+                    {post.likes} likes
+                  </div>
                 </div>
-                <div className='font-semibold text-sm mb-3'>
-                  {post.likes} likes
-                </div>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  onClick={() => toggleBookmark.mutate({ postId: post.id })}
+                  disabled={toggleBookmark.isPending}
+                  className='p-0 h-auto'
+                >
+                  <Bookmark
+                    className={cn('size-6', post.isSaved && 'fill-foreground')}
+                  />
+                </Button>
               </div>
 
               <div className='border-t p-4'>

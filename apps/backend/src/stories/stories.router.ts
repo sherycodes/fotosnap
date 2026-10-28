@@ -30,7 +30,7 @@ export class StoriesRouter {
   }
 
   @Query({ output: z.array(storyGroupSchema) })
-  async getStories() {
-    return this.storiesService.getStories();
+  async getStories(@Ctx() ctx: IAppContext) {
+    return this.storiesService.getStories(ctx.user.id);
   }
 }
