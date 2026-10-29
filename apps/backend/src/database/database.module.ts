@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { Pool } from 'pg';
 import * as authSchema from '../auth/schema.ts';
 import * as commentSchema from '../comments/schemas/schema.ts';
@@ -21,8 +23,20 @@ export const schema = {
     {
       provide: DATABASE_CONNECTION,
       useFactory: (configService: ConfigService) => {
+        let certificate: string | undefined;
+        if (process.env.NODE_ENV === 'production') {
+          const certPath = path.resolve('global-bundle.pem');
+          certificate = fs.readFileSync(certPath).toString();
+        }
         const pool = new Pool({
-          connectionString: configService.getOrThrow('DATABASE_URL'),
+          host: configService.getOrThrow('DATABASE_HOST'),
+          port: parseInt(configService.getOrThrow('DATABASE_PORT')),
+          user: configService.getOrThrow('DATABASE_USER'),
+          password: configService.getOrThrow('DATABASE_PASSWORD'),
+          database: configService.getOrThrow('DATABASE_NAME'),
+          ssl: certificate
+            ? { ca: certificate, rejectUnauthorized: true }
+            : false,
         });
         return drizzle(pool, {
           schema,
