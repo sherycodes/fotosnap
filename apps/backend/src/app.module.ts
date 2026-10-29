@@ -10,19 +10,22 @@ import { AppContext } from './app.context.ts';
 import { AppController } from './app.controller.ts';
 import { AuthMiddleware } from './auth/auth-trpc.middleware.ts';
 import { UsersModule } from './auth/users/users.module.ts';
+import { CommentsModule } from './comments/comments.module.ts';
 import { DATABASE_CONNECTION } from './database/database-connection.ts';
 import { DatabaseModule } from './database/database.module.ts';
 import { PostsModule } from './posts/posts.module.ts';
-import { UploadModule } from './upload/upload.module.ts';
-import { CommentsModule } from './comments/comments.module.ts';
 import { StoriesModule } from './stories/stories.module.ts';
+import { UploadModule } from './upload/upload.module.ts';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     DatabaseModule,
     TRPCModule.forRoot({
-      autoSchemaFile: '../../packages/trpc/src/server',
+      autoSchemaFile:
+        process.env.NODE_ENV !== 'production'
+          ? '../../packages/trpc/src/server'
+          : undefined,
       basePath: '/api/trpc',
       context: AppContext,
     }),

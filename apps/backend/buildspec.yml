@@ -24,7 +24,6 @@ phases:
       - cp -r out/drizzle deploy/
       - cp out/Procfile deploy/
       - cp out/global-bundle.pem deploy/
-      - cp out/drizzle.config.ts deploy/
       - cp out/package.json deploy/
 
 artifacts:

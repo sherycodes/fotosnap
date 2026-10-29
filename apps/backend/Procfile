@@ -1,1 +1,1 @@
-web: npx drizzle-kit migrate && node --conditions=compiled dist/main.js
+web: node --conditions=compiled dist/main.js
