@@ -5,7 +5,9 @@ export const getImageUrl = (image: string | null) => {
     return '';
   }
 
-  return `${process.env.NEXT_PUBLIC_API_URL}/uploads/${image}`;
+  const baseUrl =
+    process.env.NEXT_PUBLIC_IMAGES_URL || process.env.NEXT_PUBLIC_API_URL;
+  return `${baseUrl}/uploads/${image}`;
 };
 
 const relativeTimeFormatter = new Intl.RelativeTimeFormat('en', {

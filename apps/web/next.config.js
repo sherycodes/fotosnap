@@ -1,3 +1,7 @@
+const imagesUrl = process.env.NEXT_PUBLIC_IMAGES_URL
+  ? new URL(process.env.NEXT_PUBLIC_IMAGES_URL)
+  : null;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async rewrites() {
@@ -19,6 +23,9 @@ const nextConfig = {
         protocol: process.env.BACKEND_PROTOCOL,
         hostname: process.env.BACKEND_HOST,
       },
+      ...(imagesUrl
+        ? [{ protocol: 'https', hostname: imagesUrl.hostname }]
+        : []),
     ],
   },
 };
