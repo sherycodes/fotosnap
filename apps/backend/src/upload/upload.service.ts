@@ -8,7 +8,7 @@ import { join } from 'node:path';
 
 const UPLOAD_DIR = join(process.cwd(), 'uploads', 'images');
 
-export const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+export const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
 
 const PRESIGNED_URL_TTL = 60;
 
@@ -45,7 +45,7 @@ export class UploadService {
       );
     }
     if (!Number.isInteger(size) || size <= 0 || size > MAX_IMAGE_SIZE) {
-      throw new BadRequestException('Image must be 5 MB or smaller');
+      throw new BadRequestException('Image must be 10 MB or smaller');
     }
     if (!this.s3) {
       return { filename: null, uploadUrl: null };
