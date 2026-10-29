@@ -47,7 +47,6 @@ export default function AvatarUpload({
     try {
       await onSubmit(selectedFile);
       onOpenChange(false);
-      clearSelection();
     } catch (err) {
       toast.error('Something went wrong');
     } finally {
@@ -56,7 +55,13 @@ export default function AvatarUpload({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+      onOpenChangeComplete={(isOpen) => {
+        if (!isOpen) clearSelection();
+      }}
+    >
       <DialogContent className='max-w-md'>
         <DialogHeader>
           <DialogTitle>Update Profile Picture</DialogTitle>

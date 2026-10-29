@@ -3,8 +3,8 @@
 import { usePostActions } from '@/hooks/usePostActions';
 import { authClient } from '@/lib/auth/client';
 import { useTRPC } from '@/lib/trpc/client';
+import { PostModalProps } from '@/lib/types';
 import { cn, formatRelativeTime, getImageUrl } from '@/lib/utils';
-import { Post } from '@repo/trpc/schemas';
 import { useQuery } from '@tanstack/react-query';
 import { Bookmark, Heart, Trash2 } from 'lucide-react';
 import Image from 'next/image';
@@ -14,12 +14,6 @@ import UserAvatar from '../shared/user-avatar';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent } from '../ui/dialog';
 import { Input } from '../ui/input';
-
-interface PostModalProps {
-  post: Post;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
 
 export function PostModal({
   post: initialPost,
@@ -53,6 +47,7 @@ export function PostModal({
         postId: post.id,
         text: commentText,
       });
+      setCommentText('');
     }
   };
 
@@ -61,7 +56,13 @@ export function PostModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+      onOpenChangeComplete={(isOpen) => {
+        if (!isOpen) setCommentText('');
+      }}
+    >
       <DialogContent className='max-w-5xl! w-full h-[90vh] p-0 overflow-hidden flex flex-col'>
         <div className='grid md:grid-cols-[1.5fr_1fr] h-full flex-1 overflow-hidden'>
           <div className='relative bg-black flex items-center justify-center min-h-0'>

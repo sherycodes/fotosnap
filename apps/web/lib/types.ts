@@ -84,6 +84,12 @@ export interface ProfileTabsProps {
   onPostClick: (post: Post) => void;
 }
 
+export interface PostModalProps {
+  post: Post;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
 export interface EditProfileModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;

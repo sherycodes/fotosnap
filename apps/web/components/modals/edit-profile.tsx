@@ -21,22 +21,20 @@ export function EditProfileModal({
   profile,
   onSave,
 }: EditProfileModalProps) {
+  const profileValues = {
+    name: profile.name,
+    bio: profile.bio || '',
+    website: profile.website || '',
+  };
+
   const form = useForm<UpdateProfileInput>({
     resolver: zodResolver(updateProfileSchema),
-    defaultValues: {
-      name: profile.name,
-      bio: profile.bio || '',
-      website: profile.website || '',
-    },
+    defaultValues: profileValues,
   });
 
   useEffect(() => {
-    form.reset({
-      name: profile.name,
-      bio: profile.bio || '',
-      website: profile.website || '',
-    });
-  }, [profile, form]);
+    if (!open) form.reset(profileValues);
+  }, [profile]);
 
   const handleSubmit = (data: UpdateProfileInput) => {
     onSave(data);
@@ -46,7 +44,13 @@ export function EditProfileModal({
   const bio = form.watch('bio');
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+      onOpenChangeComplete={(isOpen) => {
+        if (!isOpen) form.reset(profileValues);
+      }}
+    >
       <DialogContent className='sm:max-w-125'>
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>

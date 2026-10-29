@@ -35,7 +35,6 @@ const PhotoUpload = () => {
         });
         toast.success('Post shared');
         setIsOpen(false);
-        clearSelection();
       },
     }),
   );
@@ -83,7 +82,13 @@ const PhotoUpload = () => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      onOpenChangeComplete={(open) => {
+        if (!open) clearSelection();
+      }}
+    >
       <DialogTrigger render={<Fab />}>
         <Plus className='size-6' />
       </DialogTrigger>
