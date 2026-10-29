@@ -1,6 +1,7 @@
 import Feed from '@/components/home/feed';
 import Sidebar from '@/components/home/sidebar';
 import Stories from '@/components/home/stories';
+import PageLoader from '@/components/shared/page-loader';
 import PhotoUpload from '@/components/modals/photo-upload';
 import { HydrateClient, prefetch, trpc } from '@/lib/trpc/server';
 import { Suspense } from 'react';
@@ -14,7 +15,7 @@ export default async function Home() {
         <div className='max-w-6xl mx-auto px-4 py-8'>
           <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
             <div className='lg:col-span-2 space-y-6'>
-              <Suspense fallback={<div>Loading...</div>}>
+              <Suspense fallback={<PageLoader className='min-h-[60vh]' />}>
                 <Stories />
                 <Feed />
               </Suspense>
