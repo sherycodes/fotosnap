@@ -3,6 +3,7 @@ lockfileVersion: '9.0'
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
+  injectWorkspacePackages: true
 
 patchedDependencies:
   nestjs-trpc-v2@1.4.1: 362e996b1ee00477c350f9b82aa9e7893d223d6c03cb1060240fac6d3e2ead38

@@ -2,6 +2,9 @@ packages:
   - "apps/*"
   - "packages/*"
 
+nodeLinker: hoisted
+injectWorkspacePackages: true
+
 fetchTimeout: 600000
 fetchRetries: 5
 networkConcurrency: 4
