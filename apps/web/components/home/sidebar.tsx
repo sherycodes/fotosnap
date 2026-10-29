@@ -2,6 +2,7 @@
 
 import { authClient } from '@/lib/auth/client';
 import { useTRPC } from '@/lib/trpc/client';
+import { uploadImage } from '@/lib/upload';
 import { getImageUrl } from '@/lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Camera, LogOut } from 'lucide-react';
@@ -42,19 +43,7 @@ export default function Sidebar() {
   };
 
   const handleAvatarUpload = async (file: File) => {
-    const formData = new FormData();
-    formData.append('image', file);
-
-    const uploadResponse = await fetch('/api/upload/image', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!uploadResponse.ok) {
-      throw new Error('Failed to upload avatar');
-    }
-
-    const { filename } = await uploadResponse.json();
+    const filename = await uploadImage(file);
     await authClient.updateUser({ image: filename });
     await queryClient.invalidateQueries({
       queryKey: trpc.postsRouter.findAll.queryKey(),

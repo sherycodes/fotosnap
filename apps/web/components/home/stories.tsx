@@ -2,6 +2,7 @@
 
 import { authClient } from '@/lib/auth/client';
 import { useTRPC } from '@/lib/trpc/client';
+import { uploadImage } from '@/lib/upload';
 import { cn, getImageUrl } from '@/lib/utils';
 import {
   useMutation,
@@ -49,19 +50,7 @@ const Stories = () => {
   );
 
   const handleUploadStory = async (file: File) => {
-    const formData = new FormData();
-    formData.append('image', file);
-
-    const res = await fetch('/api/upload/image', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!res.ok) {
-      throw new Error('Failed to upload image');
-    }
-
-    const { filename } = await res.json();
+    const filename = await uploadImage(file);
 
     await uploadStory.mutateAsync({
       image: filename,

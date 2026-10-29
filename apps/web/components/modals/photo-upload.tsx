@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useTRPC } from '@/lib/trpc/client';
+import { uploadImage } from '@/lib/upload';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, X } from 'lucide-react';
 import Image from 'next/image';
@@ -60,22 +61,11 @@ const PhotoUpload = () => {
     setIsUploading(true);
 
     try {
-      const formData = new FormData();
-      formData.append('image', selectedFile);
-      const res = await fetch('/api/upload/image', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!res.ok) {
-        throw new Error('Failed to upload image');
-      }
-
-      const { filename } = await res.json();
+      const filename = await uploadImage(selectedFile);
 
       await createPost.mutateAsync({ image: filename, caption });
     } catch (err) {
-      toast.error('Something went wrong');
+      toast.error(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setIsUploading(false);
     }
