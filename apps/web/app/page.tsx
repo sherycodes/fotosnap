@@ -6,6 +6,8 @@ import PhotoUpload from '@/components/modals/photo-upload';
 import { HydrateClient, prefetch, trpc } from '@/lib/trpc/server';
 import { Suspense } from 'react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   prefetch(trpc.postsRouter.findAll.queryOptions());
   prefetch(trpc.storiesRouter.getStories.queryOptions());
