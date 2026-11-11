@@ -81,21 +81,28 @@ export default function Feed() {
             <div className='p-4 space-y-3'>
               <div className='flex items-center justify-between'>
                 <div className='flex items-center space-x-4'>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    onClick={() => toggleLike.mutate({ postId: id })}
-                    className='p-0 h-auto'
-                  >
-                    <Heart
-                      className={cn(
-                        'size-6',
-                        isLiked
-                          ? 'fill-red-500 text-red-500'
-                          : 'text-foreground',
-                      )}
-                    />
-                  </Button>
+                  <div className='flex items-center gap-1.5'>
+                    <Button
+                      variant='ghost'
+                      size='sm'
+                      onClick={() => toggleLike.mutate({ postId: id })}
+                      aria-pressed={!!isLiked}
+                      aria-label={isLiked ? 'Unlike' : 'Like'}
+                      className='p-0 h-auto'
+                    >
+                      <Heart
+                        className={cn(
+                          'size-6',
+                          isLiked
+                            ? 'fill-red-500 text-red-500'
+                            : 'text-foreground',
+                        )}
+                      />
+                    </Button>
+                    <span className='text-sm font-semibold tabular-nums'>
+                      {likes} {likes === 1 ? 'like' : 'likes'}
+                    </span>
+                  </div>
                   <Button
                     variant='ghost'
                     size='sm'
@@ -123,8 +130,6 @@ export default function Feed() {
                   />
                 </Button>
               </div>
-
-              <div className='text-sm font-semibold'>{likes} likes</div>
 
               <div className='text-sm'>
                 <span className='font-semibold'>{username} </span>
