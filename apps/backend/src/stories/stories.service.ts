@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { CreateStoryInput, StoryGroup } from '@repo/trpc/schemas';
-import { and, eq, gt, inArray } from 'drizzle-orm';
+import { and, asc, eq, gt, inArray } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { follow } from '../auth/schema.ts';
 import { DATABASE_CONNECTION } from '../database/database-connection.ts';
@@ -44,6 +44,7 @@ export class StoriesService {
       with: {
         user: true,
       },
+      orderBy: [asc(story.createdAt)],
     });
 
     const storyGroups = new Map<string, StoryGroup>();

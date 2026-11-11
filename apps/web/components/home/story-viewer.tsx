@@ -17,6 +17,7 @@ export const StoryViewer = ({
   const [currentGroupIndex, setCurrentGroupIndex] = useState(initialGroupIndex);
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const currentGroup = storyGroups[currentGroupIndex];
   const currentStory = currentGroup?.stories[currentStoryIndex];
@@ -33,6 +34,7 @@ export const StoryViewer = ({
       onOpenChange(false);
     }
     setProgress(0);
+    setIsLoaded(false);
   };
 
   const handlePrevious = () => {
@@ -46,6 +48,7 @@ export const StoryViewer = ({
       setCurrentStoryIndex((previousGroup?.stories.length ?? 1) - 1);
     }
     setProgress(0);
+    setIsLoaded(false);
   };
 
   useEffect(() => {
@@ -53,19 +56,19 @@ export const StoryViewer = ({
       setCurrentGroupIndex(initialGroupIndex);
       setCurrentStoryIndex(0);
       setProgress(0);
+      setIsLoaded(false);
     }
   }, [open, initialGroupIndex]);
 
   useEffect(() => {
-    if (!open || !currentStory) return;
+    if (!open || !currentStory || !isLoaded) return;
 
-    setProgress(0);
     const interval = setInterval(() => {
       setProgress((prev) => Math.min(prev + 2, 100));
     }, 100);
 
     return () => clearInterval(interval);
-  }, [currentStory?.id, open]);
+  }, [currentStory?.id, open, isLoaded]);
 
   useEffect(() => {
     if (progress >= 100) handleNext();
@@ -136,7 +139,11 @@ export const StoryViewer = ({
           </div>
 
           <Image
+            key={currentStory.id}
             src={getImageUrl(currentStory.image)}
+            onLoad={() => setIsLoaded(true)}
+            onError={() => setIsLoaded(true)}
+            loading='eager'
             alt='Story'
             fill
             sizes='(max-width: 640px) 100vw, 50vh'
