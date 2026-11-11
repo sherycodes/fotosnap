@@ -155,7 +155,7 @@ export const StoryViewer = ({
               variant='ghost'
               size='icon'
               onClick={handlePrevious}
-              className='absolute left-2 top-1/2 -translate-y-1/2 z-20 text-white bg-black/50 hover:bg-black/70 transition-colors'
+              className='absolute left-2 inset-y-0 my-auto z-20 text-white bg-black/50 hover:bg-black/70 transition-colors'
             >
               <ChevronLeft className='size-6' />
             </Button>
@@ -164,7 +164,7 @@ export const StoryViewer = ({
             variant='ghost'
             size='icon'
             onClick={handleNext}
-            className='absolute right-2 top-1/2 -translate-y-1/2 z-20 text-white bg-black/50 hover:bg-black/70 transition-colors'
+            className='absolute right-2 inset-y-0 my-auto z-20 text-white bg-black/50 hover:bg-black/70 transition-colors'
           >
             <ChevronRight className='size-6' />
           </Button>
