@@ -75,10 +75,7 @@ export default function Sidebar() {
           </div>
 
           <div className='flex-1 min-w-0'>
-            <div className='font-semibold truncate'>{session?.user.email}</div>
-            <div className='text-sm text-muted-foreground truncate'>
-              {session?.user.name}
-            </div>
+            <div className='font-semibold truncate'>{session?.user.name}</div>
           </div>
           <div className='flex items-center gap-1 sm:gap-2 shrink-0'>
             <ThemeToggle />
