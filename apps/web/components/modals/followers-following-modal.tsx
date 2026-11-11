@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import UserAvatar from '../shared/user-avatar';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Spinner } from '../ui/spinner';
 
 export function FollowersFollowingModal({
   open,
@@ -21,7 +22,7 @@ export function FollowersFollowingModal({
   const profileQueryKey = trpc.usersRouter.getUserProfile.queryKey({ userId });
   const followersQueryKey = trpc.usersRouter.getFollowers.queryKey({ userId });
   const followingQueryKey = trpc.usersRouter.getFollowing.queryKey({ userId });
-  const { data: followers = [] } = useQuery(
+  const { data: followers = [], isPending: followersPending } = useQuery(
     trpc.usersRouter.getFollowers.queryOptions(
       {
         userId,
@@ -31,7 +32,7 @@ export function FollowersFollowingModal({
       },
     ),
   );
-  const { data: following = [] } = useQuery(
+  const { data: following = [], isPending: followingPending } = useQuery(
     trpc.usersRouter.getFollowing.queryOptions(
       {
         userId,
@@ -74,6 +75,7 @@ export function FollowersFollowingModal({
   );
 
   const users = type === 'followers' ? followers : following;
+  const isLoading = type === 'followers' ? followersPending : followingPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -84,7 +86,11 @@ export function FollowersFollowingModal({
           </DialogTitle>
         </DialogHeader>
         <div className='max-h-[60vh] overflow-y-auto'>
-          {users.length === 0 ? (
+          {isLoading ? (
+            <div className='flex justify-center py-8'>
+              <Spinner className='size-6 text-muted-foreground' />
+            </div>
+          ) : users.length === 0 ? (
             <p className='text-center text-muted-foreground py-8'>
               No {type === 'followers' ? 'followers' : 'following'} yet
             </p>
