@@ -26,11 +26,13 @@ export const StoryViewer = ({
 
     if (currentStoryIndex < currentGroup.stories.length - 1) {
       setCurrentStoryIndex(currentStoryIndex + 1);
-      setProgress(0);
-    } else {
+    } else if (currentGroupIndex < storyGroups.length - 1) {
+      setCurrentGroupIndex(currentGroupIndex + 1);
       setCurrentStoryIndex(0);
-      setProgress(0);
+    } else {
+      onOpenChange(false);
     }
+    setProgress(0);
   };
 
   const handlePrevious = () => {
@@ -38,8 +40,12 @@ export const StoryViewer = ({
 
     if (currentStoryIndex > 0) {
       setCurrentStoryIndex(currentStoryIndex - 1);
-      setProgress(0);
+    } else if (currentGroupIndex > 0) {
+      const previousGroup = storyGroups[currentGroupIndex - 1];
+      setCurrentGroupIndex(currentGroupIndex - 1);
+      setCurrentStoryIndex((previousGroup?.stories.length ?? 1) - 1);
     }
+    setProgress(0);
   };
 
   useEffect(() => {
@@ -55,17 +61,15 @@ export const StoryViewer = ({
 
     setProgress(0);
     const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          handleNext();
-          return 0;
-        }
-        return prev + 2;
-      });
+      setProgress((prev) => Math.min(prev + 2, 100));
     }, 100);
 
     return () => clearInterval(interval);
   }, [currentStory?.id, open]);
+
+  useEffect(() => {
+    if (progress >= 100) handleNext();
+  }, [progress]);
 
   const handleClose = () => {
     onOpenChange(false);
