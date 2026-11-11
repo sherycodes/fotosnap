@@ -15,16 +15,8 @@ import { Button } from '../ui/button';
 import { Dialog, DialogContent } from '../ui/dialog';
 import { Input } from '../ui/input';
 
-export function PostModal({
-  post: initialPost,
-  open,
-  onOpenChange,
-}: PostModalProps) {
+export function PostModal({ post, open, onOpenChange }: PostModalProps) {
   const trpc = useTRPC();
-  const { data: allPosts } = useQuery(
-    trpc.postsRouter.findAll.queryOptions({}),
-  );
-  const post = allPosts?.find((p) => p.id === initialPost.id) || initialPost;
   const [commentText, setCommentText] = useState('');
   const { data: comments = [] } = useQuery(
     trpc.commentsRouter.findByPostId.queryOptions({
@@ -51,8 +43,8 @@ export function PostModal({
     }
   };
 
-  const handleLike = async () => {
-    await toggleLike.mutateAsync({ postId: post.id });
+  const handleLike = () => {
+    toggleLike.mutate({ postId: post.id });
   };
 
   return (
@@ -171,28 +163,33 @@ export function PostModal({
 
             <div className='border-t p-4'>
               <div className='flex items-center justify-between mb-2'>
-                <div className='flex items-center space-x-4'>
+                <div className='flex items-center gap-1.5'>
                   <Button
                     variant='ghost'
                     size='icon'
                     onClick={handleLike}
-                    disabled={toggleLike.isPending}
-                    className='p-0 h-auto'
+                    aria-pressed={!!post.isLiked}
+                    aria-label={post.isLiked ? 'Unlike' : 'Like'}
+                    className='p-0 h-auto w-auto'
                   >
                     <Heart
-                      className={`size-6 ${post.isLiked ? 'fill-red-500 text-red-500' : ''}`}
+                      className={cn(
+                        'size-6',
+                        post.isLiked && 'fill-red-500 text-red-500',
+                      )}
                     />
                   </Button>
-                  <div className='font-semibold text-sm'>
-                    {post.likes} likes
-                  </div>
+                  <span className='font-semibold text-sm tabular-nums'>
+                    {post.likes} {post.likes === 1 ? 'like' : 'likes'}
+                  </span>
                 </div>
                 <Button
                   variant='ghost'
                   size='icon'
                   onClick={() => toggleBookmark.mutate({ postId: post.id })}
-                  disabled={toggleBookmark.isPending}
-                  className='p-0 h-auto'
+                  aria-pressed={!!post.isSaved}
+                  aria-label={post.isSaved ? 'Remove from saved' : 'Save'}
+                  className='p-0 h-auto w-auto'
                 >
                   <Bookmark
                     className={cn('size-6', post.isSaved && 'fill-foreground')}

@@ -145,7 +145,10 @@ const ProfileClient = ({ userId }: { userId: string }) => {
 
       {selectedPost && (
         <PostModal
-          post={selectedPost}
+          post={
+            [...posts, ...bookmarks].find((p) => p.id === selectedPost.id) ??
+            selectedPost
+          }
           open={isModalOpen}
           onOpenChange={setIsModalOpen}
         />

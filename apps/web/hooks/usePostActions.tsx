@@ -1,85 +1,92 @@
 'use client';
 
 import { useTRPC } from '@/lib/trpc/client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { Post } from '@repo/trpc/schemas';
+import {
+  type QueryKey,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { toast } from 'sonner';
+
+type Snapshot = [QueryKey, Post[] | undefined][];
 
 export function usePostActions() {
   const trpc = useTRPC();
 
   const queryClient = useQueryClient();
-  const postsKey = trpc.postsRouter.findAll.queryKey();
-  const bookmarksKey = trpc.postsRouter.getBookmarks.queryKey();
+  const postLists = [
+    trpc.postsRouter.findAll.pathKey(),
+    trpc.postsRouter.getBookmarks.pathKey(),
+  ];
+
+  const snapshotPosts = async (): Promise<Snapshot> => {
+    await Promise.all(
+      postLists.map((queryKey) => queryClient.cancelQueries({ queryKey })),
+    );
+    return postLists.flatMap((queryKey) =>
+      queryClient.getQueriesData<Post[]>({ queryKey }),
+    );
+  };
+
+  const updatePost = (postId: number, update: (post: Post) => Post) => {
+    for (const queryKey of postLists) {
+      queryClient.setQueriesData<Post[]>({ queryKey }, (old) =>
+        old?.map((post) => (post.id === postId ? update(post) : post)),
+      );
+    }
+  };
+
+  const restorePosts = (snapshot?: Snapshot) => {
+    for (const [queryKey, data] of snapshot ?? []) {
+      queryClient.setQueryData(queryKey, data);
+    }
+  };
+
+  const refreshPosts = () =>
+    Promise.all(
+      postLists.map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+    );
+
   const toggleLike = useMutation(
     trpc.postsRouter.likePost.mutationOptions({
       onMutate: async ({ postId }) => {
-        await queryClient.cancelQueries({ queryKey: postsKey });
-        const previousPosts = queryClient.getQueryData(postsKey);
-        queryClient.setQueryData(postsKey, (old) =>
-          old?.map((post) =>
-            post.id === postId
-              ? {
-                  ...post,
-                  isLiked: !post.isLiked,
-                  likes: post.likes + (post.isLiked ? -1 : 1),
-                }
-              : post,
-          ),
-        );
-
-        return { previousPosts };
+        const snapshot = await snapshotPosts();
+        updatePost(postId, (post) => ({
+          ...post,
+          isLiked: !post.isLiked,
+          likes: post.likes + (post.isLiked ? -1 : 1),
+        }));
+        return { snapshot };
       },
       onError: (_err, _vars, context) => {
-        if (context?.previousPosts) {
-          queryClient.setQueryData(postsKey, context.previousPosts);
-        }
+        restorePosts(context?.snapshot);
         toast.error('Could not update like');
       },
-      onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: postsKey });
-      },
+      onSettled: refreshPosts,
     }),
   );
 
   const toggleBookmark = useMutation(
     trpc.postsRouter.bookmarkPost.mutationOptions({
       onMutate: async ({ postId }) => {
-        await queryClient.cancelQueries({ queryKey: postsKey });
-        const previousPosts = queryClient.getQueryData(postsKey);
-        queryClient.setQueryData(postsKey, (old) =>
-          old?.map((post) =>
-            post.id === postId
-              ? {
-                  ...post,
-                  isSaved: !post.isSaved,
-                }
-              : post,
-          ),
-        );
-
-        return { previousPosts };
+        const snapshot = await snapshotPosts();
+        updatePost(postId, (post) => ({ ...post, isSaved: !post.isSaved }));
+        return { snapshot };
       },
       onError: (_err, _vars, context) => {
-        if (context?.previousPosts) {
-          queryClient.setQueryData(postsKey, context.previousPosts);
-        }
+        restorePosts(context?.snapshot);
         toast.error('Could not update bookmark');
       },
-      onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: postsKey });
-        queryClient.invalidateQueries({ queryKey: bookmarksKey });
-      },
+      onSettled: refreshPosts,
     }),
   );
 
   const updateCommentCount = (postId: number, change: number) => {
-    queryClient.setQueryData(postsKey, (old) =>
-      old?.map((post) =>
-        post.id === postId
-          ? { ...post, comments: post.comments + change }
-          : post,
-      ),
-    );
+    updatePost(postId, (post) => ({
+      ...post,
+      comments: post.comments + change,
+    }));
   };
 
   const addComment = useMutation(
@@ -108,7 +115,7 @@ export function usePostActions() {
       },
       onSettled: () => {
         queryClient.invalidateQueries({
-          queryKey: trpc.commentsRouter.findByPostId.queryKey(),
+          queryKey: trpc.commentsRouter.findByPostId.pathKey(),
         });
       },
     }),
