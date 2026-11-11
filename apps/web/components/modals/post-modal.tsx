@@ -180,7 +180,7 @@ export function PostModal({ post, open, onOpenChange }: PostModalProps) {
                     />
                   </Button>
                   <span className='font-semibold text-sm tabular-nums'>
-                    {post.likes} {post.likes === 1 ? 'like' : 'likes'}
+                    {post.likes}
                   </span>
                 </div>
                 <Button

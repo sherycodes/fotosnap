@@ -100,7 +100,7 @@ export default function Feed() {
                       />
                     </Button>
                     <span className='text-sm font-semibold tabular-nums'>
-                      {likes} {likes === 1 ? 'like' : 'likes'}
+                      {likes}
                     </span>
                   </div>
                   <Button
