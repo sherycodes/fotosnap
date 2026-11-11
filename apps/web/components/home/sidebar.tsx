@@ -4,7 +4,8 @@ import { authClient } from '@/lib/auth/client';
 import { useTRPC } from '@/lib/trpc/client';
 import { uploadImage } from '@/lib/upload';
 import { getImageUrl } from '@/lib/utils';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useFollowActions } from '@/hooks/useFollowActions';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Camera, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -25,16 +26,7 @@ export default function Sidebar() {
     trpc.usersRouter.getSuggestedUsers.queryOptions(),
   );
 
-  const followMutation = useMutation(
-    trpc.usersRouter.follow.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: trpc.usersRouter.getSuggestedUsers.queryKey(),
-        });
-      },
-    }),
-  );
-
+  const { follow, unfollow } = useFollowActions();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -129,13 +121,23 @@ export default function Sidebar() {
                 </Link>
 
                 <Button
-                  variant='ghost'
+                  variant={user.isFollowing ? 'outline' : 'default'}
                   size='sm'
-                  className='bg-primary text-muted hover:text-muted/90 hover:bg-primary/90 dark:hover:bg-primary/90 dark:hover:text-muted/90 text-xs'
-                  onClick={() => followMutation.mutate({ userId: user.id })}
-                  disabled={followMutation.isPending}
+                  className='text-xs'
+                  onClick={() => {
+                    if (user.isFollowing) {
+                      unfollow.mutate({ userId: user.id });
+                    } else {
+                      follow.mutate({ userId: user.id });
+                    }
+                  }}
+                  disabled={
+                    (follow.isPending && follow.variables?.userId === user.id) ||
+                    (unfollow.isPending &&
+                      unfollow.variables?.userId === user.id)
+                  }
                 >
-                  Follow
+                  {user.isFollowing ? 'Following' : 'Follow'}
                 </Button>
               </div>
             ))

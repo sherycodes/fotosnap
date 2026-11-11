@@ -2,7 +2,8 @@ import { authClient } from '@/lib/auth/client';
 import { useTRPC } from '@/lib/trpc/client';
 import { FollowersFollowingModalProps } from '@/lib/types';
 import { getImageUrl } from '@/lib/utils';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useFollowActions } from '@/hooks/useFollowActions';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import UserAvatar from '../shared/user-avatar';
 import { Button } from '../ui/button';
@@ -18,10 +19,6 @@ export function FollowersFollowingModal({
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const trpc = useTRPC();
-  const queryClient = useQueryClient();
-  const profileQueryKey = trpc.usersRouter.getUserProfile.queryKey({ userId });
-  const followersQueryKey = trpc.usersRouter.getFollowers.queryKey({ userId });
-  const followingQueryKey = trpc.usersRouter.getFollowing.queryKey({ userId });
   const { data: followers = [], isPending: followersPending } = useQuery(
     trpc.usersRouter.getFollowers.queryOptions(
       {
@@ -42,37 +39,7 @@ export function FollowersFollowingModal({
       },
     ),
   );
-  const followMutation = useMutation(
-    trpc.usersRouter.follow.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: followersQueryKey,
-        });
-        queryClient.invalidateQueries({
-          queryKey: followingQueryKey,
-        });
-        queryClient.invalidateQueries({
-          queryKey: profileQueryKey,
-        });
-      },
-    }),
-  );
-
-  const unfollowMutation = useMutation(
-    trpc.usersRouter.unfollow.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: followersQueryKey,
-        });
-        queryClient.invalidateQueries({
-          queryKey: followingQueryKey,
-        });
-        queryClient.invalidateQueries({
-          queryKey: profileQueryKey,
-        });
-      },
-    }),
-  );
+  const { follow, unfollow } = useFollowActions();
 
   const users = type === 'followers' ? followers : following;
   const isLoading = type === 'followers' ? followersPending : followingPending;
@@ -135,13 +102,16 @@ export function FollowersFollowingModal({
                       size={'sm'}
                       onClick={() => {
                         if (user.isFollowing) {
-                          unfollowMutation.mutate({ userId: user.id });
+                          unfollow.mutate({ userId: user.id });
                         } else {
-                          followMutation.mutate({ userId: user.id });
+                          follow.mutate({ userId: user.id });
                         }
                       }}
                       disabled={
-                        followMutation.isPending || unfollowMutation.isPending
+                        (follow.isPending &&
+                          follow.variables?.userId === user.id) ||
+                        (unfollow.isPending &&
+                          unfollow.variables?.userId === user.id)
                       }
                       className='shrink-0'
                     >

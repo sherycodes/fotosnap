@@ -1,5 +1,6 @@
 'use client';
 
+import { useFollowActions } from '@/hooks/useFollowActions';
 import { EditProfileModal } from '@/components/modals/edit-profile';
 import { FollowersFollowingModal } from '@/components/modals/followers-following-modal';
 import { PostModal } from '@/components/modals/post-modal';
@@ -32,8 +33,7 @@ const ProfileClient = ({ userId }: { userId: string }) => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const profileQueryKey = trpc.usersRouter.getUserProfile.queryKey({ userId });
-  const followersQueryKey = trpc.usersRouter.getFollowers.queryKey({ userId });
-  const followingQueryKey = trpc.usersRouter.getFollowing.queryKey({ userId });
+  const { follow, unfollow } = useFollowActions();
   const { data: profile } = useSuspenseQuery(
     trpc.usersRouter.getUserProfile.queryOptions({ userId }),
   );
@@ -44,38 +44,6 @@ const ProfileClient = ({ userId }: { userId: string }) => {
 
   const { data: bookmarks = [] } = useSuspenseQuery(
     trpc.postsRouter.getBookmarks.queryOptions(),
-  );
-
-  const unfollowMutation = useMutation(
-    trpc.usersRouter.unfollow.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: followersQueryKey,
-        });
-        queryClient.invalidateQueries({
-          queryKey: followingQueryKey,
-        });
-        queryClient.invalidateQueries({
-          queryKey: profileQueryKey,
-        });
-      },
-    }),
-  );
-
-  const followMutation = useMutation(
-    trpc.usersRouter.follow.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: followersQueryKey,
-        });
-        queryClient.invalidateQueries({
-          queryKey: followingQueryKey,
-        });
-        queryClient.invalidateQueries({
-          queryKey: profileQueryKey,
-        });
-      },
-    }),
   );
 
   const updateProfileMutation = useMutation(
@@ -90,10 +58,10 @@ const ProfileClient = ({ userId }: { userId: string }) => {
     if (!profile) {
       return;
     }
-    if (profile?.isFollowing) {
-      unfollowMutation.mutate({ userId: profile.id });
+    if (profile.isFollowing) {
+      unfollow.mutate({ userId: profile.id });
     } else {
-      followMutation.mutate({ userId: profile.id });
+      follow.mutate({ userId: profile.id });
     }
   };
 
@@ -123,9 +91,7 @@ const ProfileClient = ({ userId }: { userId: string }) => {
           profile={profile}
           onFollowToggle={handleFollowToggle}
           onEditProfile={() => setIsEditProfileOpen(true)}
-          isFollowLoading={
-            followMutation.isPending || unfollowMutation.isPending
-          }
+          isFollowLoading={follow.isPending || unfollow.isPending}
           onOpenFollowers={() =>
             setFollowersFollowingModal({ open: true, type: 'followers' })
           }
