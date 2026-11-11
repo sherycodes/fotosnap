@@ -1,19 +1,32 @@
 import { relations } from 'drizzle-orm';
-import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import {
+  index,
+  integer,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+} from 'drizzle-orm/pg-core';
 import { user } from '../../auth/schema.ts';
 import { comment } from '../../comments/schemas/schema.ts';
 
-export const post = pgTable('posts', {
-  id: serial().primaryKey(),
-  image: text().notNull(),
-  caption: text().notNull(),
-  createdAt: timestamp('created_at')
-    .$defaultFn(() => new Date())
-    .notNull(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => user.id),
-});
+export const post = pgTable(
+  'posts',
+  {
+    id: serial().primaryKey(),
+    image: text().notNull(),
+    caption: text().notNull(),
+    createdAt: timestamp('created_at')
+      .$defaultFn(() => new Date())
+      .notNull(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id),
+  },
+  (table) => [
+    index('posts_user_id_created_at_idx').on(table.userId, table.createdAt),
+  ],
+);
 
 export const postRelations = relations(post, ({ one, many }) => ({
   user: one(user, {
@@ -25,15 +38,21 @@ export const postRelations = relations(post, ({ one, many }) => ({
   bookmarks: many(bookmark),
 }));
 
-export const like = pgTable('likes', {
-  id: serial().primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => user.id),
-  postId: integer('post_id')
-    .notNull()
-    .references(() => post.id),
-});
+export const like = pgTable(
+  'likes',
+  {
+    id: serial().primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id),
+    postId: integer('post_id')
+      .notNull()
+      .references(() => post.id),
+  },
+  (table) => [
+    index('likes_post_id_user_id_idx').on(table.postId, table.userId),
+  ],
+);
 
 export const likeRelations = relations(like, ({ one }) => ({
   user: one(user, {
@@ -46,18 +65,25 @@ export const likeRelations = relations(like, ({ one }) => ({
   }),
 }));
 
-export const bookmark = pgTable('bookmarks', {
-  id: serial().primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => user.id),
-  postId: integer('post_id')
-    .notNull()
-    .references(() => post.id),
-  createdAt: timestamp('created_at')
-    .$defaultFn(() => new Date())
-    .notNull(),
-});
+export const bookmark = pgTable(
+  'bookmarks',
+  {
+    id: serial().primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id),
+    postId: integer('post_id')
+      .notNull()
+      .references(() => post.id),
+    createdAt: timestamp('created_at')
+      .$defaultFn(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('bookmarks_post_id_user_id_idx').on(table.postId, table.userId),
+    index('bookmarks_user_id_created_at_idx').on(table.userId, table.createdAt),
+  ],
+);
 
 export const bookmarkRelations = relations(bookmark, ({ one }) => ({
   user: one(user, {

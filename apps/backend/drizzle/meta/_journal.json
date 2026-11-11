@@ -57,6 +57,13 @@
       "when": 1793170741091,
       "tag": "0007_flippant_iron_patriot",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794410840273,
+      "tag": "0008_post_count_indexes",
+      "breakpoints": true
     }
   ]
 }
